@@ -29,8 +29,10 @@
   /* ---------- Sidebar ---------- */
   aside{position:absolute;left:12px;top:12px;bottom:12px;width:76px;z-index:15;display:flex;flex-direction:column;gap:2px;padding:26px 0;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;background:transparent;transition:width .5s var(--ease)}
   aside::-webkit-scrollbar{display:none}
-  aside:hover{width:240px}
-  aside:hover .nav{box-shadow:0 30px 70px #000b}
+  aside{pointer-events:none}
+  .nav{pointer-events:auto}
+  aside.open{width:240px}
+  aside.open .nav{box-shadow:0 30px 70px #000b}
   .brand{font-weight:800;font-size:19px;letter-spacing:-.4px;padding:2px 12px 26px}
   .nav button{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:10px;color:var(--muted);font-size:14px;font-weight:500;text-align:left;transition:background .25s var(--ease),color .25s}
   .nav button:hover{color:var(--txt);background:var(--surface)}
@@ -47,8 +49,8 @@
   .nav button.active{color:#fff}
   .nav button.active svg{opacity:1}
   .nav button{border-radius:999px}
-  aside:not(:hover) .nav button{width:46px;height:46px;margin:0 auto;padding:0;border-radius:50%;justify-content:center;gap:0}
-  aside:not(:hover) .nav button.active{background:#ffffff1c}
+  aside:not(.open) .nav button{width:46px;height:46px;margin:0 auto;padding:0;border-radius:50%;justify-content:center;gap:0}
+  aside:not(.open) .nav button.active{background:#ffffff1c}
   .nav button.active{background:#ffffff1c}
 
   /* Плейлисты: название всегда в одну строку с многоточием, без вылезания за капсулу */
@@ -60,20 +62,20 @@
 
   /* Подписи плавно выезжают при наведении, в свёрнутом виде скрыты */
   .nav span{display:inline-block;max-width:160px;overflow:hidden;white-space:nowrap;opacity:1;transform:translateX(0);transition:max-width .5s var(--ease),opacity .3s,transform .4s var(--ease)}
-  aside:not(:hover) .nav span{max-width:0;opacity:0;transform:translateX(-10px)}
-  aside:hover .nav span{transition-delay:.12s}
+  aside:not(.open) .nav span{max-width:0;opacity:0;transform:translateX(-10px)}
+  aside.open .nav span{transition-delay:.12s}
   .nav button{transition:background .25s,color .25s,gap .4s var(--ease),padding .4s var(--ease)}
-  aside:not(:hover) .nav button{gap:0;padding:12px 20px}
+  aside:not(.open) .nav button{gap:0;padding:12px 20px}
 
   .brand{display:flex;align-items:baseline;white-space:nowrap;overflow:hidden;padding:2px 12px 26px}
   .brand b{font-size:21px;font-weight:900;letter-spacing:-.4px;color:#fff}
   .brand span{font-size:19px;font-weight:800;letter-spacing:-.4px;max-width:140px;overflow:hidden;opacity:1;transition:max-width .5s var(--ease),opacity .3s}
-  aside:not(:hover) .brand{justify-content:center;padding:2px 0 26px}
-  aside:not(:hover) .brand span{max-width:0;opacity:0}
+  aside:not(.open) .brand{justify-content:center;padding:2px 0 26px}
+  aside:not(.open) .brand span{max-width:0;opacity:0}
 
   .label,#plList{transition:opacity .3s,visibility .3s}
-  aside:not(:hover) .label,aside:not(:hover) #plList{opacity:0;visibility:hidden}
-  aside:hover .label,aside:hover #plList{transition-delay:.15s}
+  aside:not(.open) .label,aside:not(.open) #plList{opacity:0;visibility:hidden}
+  aside.open .label,aside.open #plList{transition-delay:.15s}
   .label{display:flex;justify-content:space-between;align-items:center;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);padding:24px 12px 8px}
   .plus{width:24px;height:24px;border-radius:7px;color:var(--muted);font-size:18px;line-height:1;display:grid;place-items:center;transition:.2s}
   .plus:hover{color:var(--txt);background:var(--surface)}
@@ -217,7 +219,7 @@
 
   /* ---------- Плейлисты и избранное внутри капсулы ---------- */
   .pl-wrap{overflow:hidden;max-height:0;opacity:0;transition:max-height .5s var(--ease),opacity .3s}
-  aside:hover .pl-wrap{max-height:560px;opacity:1;transition-delay:.12s}
+  aside.open .pl-wrap{max-height:560px;opacity:1;transition-delay:.12s}
   .pl-wrap .label{padding:18px 12px 8px}
   #content,#body,.list{width:100%}
 
@@ -290,10 +292,10 @@
     .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
     .app{grid-template-columns:1fr}
     aside{position:static;width:auto;flex-direction:row;overflow-x:auto;overflow-y:hidden;padding:10px 12px;border-radius:0;border:0;border-bottom:1px solid var(--line);box-shadow:none;transition:none;gap:6px;align-items:center}
-    aside:hover{width:auto}
-    aside:not(:hover) .nav span{max-width:none;opacity:1;transform:none}
-    aside:not(:hover) .nav button{gap:6px;padding:10px 12px;width:auto;height:auto;margin:0;border-radius:999px}
-    aside:not(:hover) #plList{opacity:1;visibility:visible}
+    aside.open{width:auto}
+    aside:not(.open) .nav span{max-width:none;opacity:1;transform:none}
+    aside:not(.open) .nav button{gap:6px;padding:10px 12px;width:auto;height:auto;margin:0;border-radius:999px}
+    aside:not(.open) #plList{opacity:1;visibility:visible}
     .brand,.label{display:none}
     .nav{display:flex;gap:6px;margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
     .nav button.active::before{display:none}
@@ -401,6 +403,93 @@
   @media (max-width:760px){
     .player{bottom:calc(env(safe-area-inset-bottom,0px) + 10px) !important;height:64px !important;left:10px !important;right:10px !important}
     .tabbar{left:10px !important;right:10px !important;bottom:calc(env(safe-area-inset-bottom,0px) + 82px) !important;height:64px !important;padding:4px 6px !important;border:1px solid #2a2a2a !important;border-radius:20px;background:#0e0e0ef5 !important;box-shadow:0 18px 40px #000a}
+  }
+
+  /* ---------- Профиль, авторизация, админка ---------- */
+  .search{margin-right:58px}
+  .me-btn{position:fixed;top:calc(env(safe-area-inset-top,0px) + 18px);right:22px;z-index:18;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:16px;background:linear-gradient(135deg,#3a3a3a,#171717);border:1px solid #ffffff22;transition:transform .35s var(--ease),box-shadow .35s}
+  .me-btn:hover{transform:scale(1.1);box-shadow:0 0 0 5px #ffffff14}
+  .me-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+  .pf-bg{position:fixed;inset:0;z-index:40;background:#000a;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .5s var(--ease)}
+  .pf-bg.open{opacity:1;pointer-events:auto}
+  .pf{position:fixed;top:12px;right:12px;bottom:12px;width:min(390px,calc(100% - 24px));z-index:41;border-radius:30px;background:linear-gradient(180deg,#1b1b1b,#0e0e0e);border:1px solid #ffffff1f;box-shadow:-30px 0 90px #000c;padding:30px 24px;overflow-y:auto;scrollbar-width:none;transform:translateX(calc(100% + 40px)) scale(.94);opacity:0;pointer-events:none;transition:transform .7s cubic-bezier(.16,1,.3,1),opacity .4s}
+  .pf.open{transform:none;opacity:1;pointer-events:auto}
+  .pf .st{opacity:0}
+  .pf.open .st{animation:pfIn .8s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i,0)*85ms + 200ms)}
+  @keyframes pfIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .pf-x{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:50%;background:#ffffff12;font-size:20px;line-height:1;transition:transform .4s var(--ease),background .25s;z-index:2}
+  .pf-x:hover{transform:rotate(90deg);background:#ffffff24}
+  .pf-ava{width:92px;height:92px;border-radius:50%;margin:14px auto 16px;display:grid;place-items:center;font-size:40px;font-weight:800;position:relative;background:linear-gradient(135deg,hsl(var(--h) 70% 55%),hsl(calc(var(--h) + 50) 70% 35%))}
+  .pf-ava::before{content:"";position:absolute;inset:-7px;border-radius:50%;background:conic-gradient(hsl(var(--h) 90% 65%),transparent 65%,hsl(var(--h) 90% 65%));-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1px));mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1px));animation:spin 6s linear infinite}
+  .pf-name{text-align:center;font-weight:800;font-size:24px;letter-spacing:-.5px}
+  .pf-role{text-align:center;color:var(--muted);font-size:12px;margin-top:4px}
+  .pf-time{margin:26px auto 10px;position:relative;width:200px;height:200px}
+  .pf-time svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .pf-time circle{fill:none;stroke-width:7;stroke-linecap:round}
+  .pf-time .bg{stroke:#ffffff10}
+  .pf-time .fg{stroke:hsl(var(--h) 85% 62%);stroke-dasharray:339.3;stroke-dashoffset:339.3;transition:stroke-dashoffset 1.8s cubic-bezier(.16,1,.3,1) .6s;filter:drop-shadow(0 0 7px hsl(var(--h) 90% 60% / .65))}
+  .pf-time .in{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+  .pf-time b{font-size:52px;letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums}
+  .pf-time b small{font-size:18px;letter-spacing:0;color:var(--muted);margin-left:3px;font-weight:600}
+  .pf-time span{font-size:13px;color:var(--muted);margin-top:6px;font-variant-numeric:tabular-nums}
+  .pf-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px}
+  .pf-stat{background:#ffffff08;border:1px solid #ffffff10;border-radius:16px;padding:14px 6px;text-align:center}
+  .pf-stat b{display:block;font-size:20px}
+  .pf-stat span{font-size:11px;color:var(--muted)}
+  .pf-btn{display:block;width:100%;margin-top:10px;padding:14px;border-radius:14px;background:#ffffff10;font-weight:600;font-size:14px;transition:background .25s,transform .25s}
+  .pf-btn:hover{background:#ffffff1c;transform:translateY(-1px)}
+  .pf-btn.pri{background:var(--txt);color:#000}
+  .pf-btn.red{color:#d97070}
+  .pf-tabs{display:grid;grid-template-columns:1fr 1fr;background:#ffffff0c;border-radius:999px;padding:4px;margin:40px 0 24px}
+  .pf-tabs button{padding:10px;border-radius:999px;font-weight:600;font-size:13px;color:var(--muted);transition:background .3s,color .3s}
+  .pf-tabs button.on{background:var(--txt);color:#000}
+  .pf-h{font-size:26px;font-weight:800;letter-spacing:-.6px}
+  .pf-p{color:var(--muted);font-size:13px;margin-top:6px}
+  .pf-in{width:100%;padding:13px 16px;margin-bottom:10px;border-radius:14px;background:#ffffff0a;border:1px solid #ffffff14;outline:0;font-size:14px;transition:border-color .25s,background .25s}
+  .pf-in:focus{border-color:#ffffff44;background:#ffffff10}
+  .pf-err{color:#e07070;font-size:13px;min-height:18px;margin:2px 0 8px}
+  .ad{display:grid;gap:22px;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}
+  .ad-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px}
+  .ad-card h4{font-size:15px;margin-bottom:14px}
+  .ad-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .ad-chips button{padding:7px 14px;border-radius:999px;background:var(--surface2);font-size:13px;color:var(--muted);transition:background .25s,color .25s}
+  .ad-chips button.on{background:var(--txt);color:#000}
+  .ad-t{display:flex;align-items:center;gap:10px;padding:7px 4px;border-radius:10px}
+  .ad-t i{width:38px;height:38px;border-radius:8px;background:var(--surface2) center/cover;flex:none}
+  .ad-t div{flex:1;min-width:0}
+  .ad-t b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ad-t small{color:var(--muted);font-size:12px}
+  .ad-t button{min-width:30px;height:30px;padding:0 10px;border-radius:999px;background:var(--surface2);flex:none;font-size:12px}
+  @media (max-width:900px){.ad{grid-template-columns:1fr}}
+  @media (max-width:760px){.search{margin-right:0}.me-btn{right:14px;top:calc(env(safe-area-inset-top,0px) + 12px)}.pf{top:8px;right:8px;bottom:8px;width:calc(100% - 16px)}}
+  /* ---------- Страница артиста ---------- */
+  .ahead{display:flex;gap:30px;align-items:flex-end;margin-bottom:34px}
+  .aavatar{width:210px;height:210px;border-radius:50%;background:var(--surface2) center/cover;flex:none;box-shadow:0 30px 70px #000c;animation:pop .7s var(--ease) both}
+  .ainfo{min-width:0}
+  .aname{font-size:clamp(40px,5.5vw,72px);font-weight:900;letter-spacing:-2px;line-height:1;margin:6px 0 10px}
+  .ainfo .acts{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+  .acols{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:36px;align-items:start;margin-bottom:10px}
+  .newrel{display:block;width:100%;text-align:left;animation:rise .6s var(--ease) both;transition:transform .35s var(--ease)}
+  .newrel:hover{transform:translateY(-3px)}
+  .nr-cover{width:100%;aspect-ratio:1;border-radius:16px;background:var(--surface2) center/cover;box-shadow:0 20px 40px #0009}
+  .nr-name{font-weight:700;margin-top:12px;font-size:15px}
+  .nr-sub{color:var(--muted);font-size:13px;margin-top:4px}
+  .hrow{display:flex;gap:16px;overflow-x:auto;padding:4px 2px 16px;scroll-snap-type:x mandatory;scrollbar-width:none}
+  .hrow::-webkit-scrollbar{display:none}
+  .acard{flex:0 0 164px;scroll-snap-align:start;text-align:left;min-width:0;animation:rise .5s var(--ease) both;transition:transform .35s var(--ease)}
+  .acard:hover{transform:translateY(-4px)}
+  .ac-cover{width:164px;height:164px;border-radius:14px;background:var(--surface2) center/cover;box-shadow:0 14px 30px #0008}
+  .ac-t{font-weight:700;font-size:14px;margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ac-s{font-size:12px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  @media (max-width:760px){
+    .ahead{flex-direction:column;align-items:center;text-align:center;gap:18px}
+    .aavatar{width:190px;height:190px}
+    .aname{font-size:40px}
+    .ainfo .acts{justify-content:center}
+    .acols{grid-template-columns:1fr;gap:26px}
+    .acard{flex-basis:146px}
+    .ac-cover{width:146px;height:146px}
   }
 </style>
 </head>
@@ -530,6 +619,9 @@
   <button data-go="library"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></span><span>Библиотека</span></button>
 </nav>
 <input type="file" id="coverInput" accept="image/*" hidden>
+<button class="me-btn" id="meBtn" title="Профиль"></button>
+<div class="pf-bg" id="pfBg"></div>
+<div class="pf" id="pf"><button class="pf-x" id="pfX" title="Закрыть">×</button><div id="pfBody"></div></div>
 <audio id="audio" preload="none"></audio>
 
 <script>
@@ -647,6 +739,7 @@ async function load(path) {
     const { tracks } = await api(path);
     if (my !== loadId) return;
     renderTracks(tracks || []);
+    return tracks || [];
   } catch (e) {
     if (my !== loadId) return;
     setBody(`<p class="sub">${esc(e.message)}</p>
@@ -664,8 +757,10 @@ function showHome() {
       <p>Слушайте музыку и собирайте свои плейлисты</p>
       <button class="btn" data-wave>${I_PLAY} Моя волна</button>
     </div>
+    <div id="fpBox"></div>
     <div class="section">Популярное</div>`);
   load('/api/search?q=' + enc('хиты 2026'));
+  loadFeatured();
 }
 
 function showWave() {
@@ -696,34 +791,98 @@ function showTrends() {
       <h2>Топ-чарт</h2>
       <div class="sub">Россия</div>
     </div></div>`);
-  load('/api/chart?option=russia');
+  load('/api/chart?option=russia').then((t) => { if (t && t.length && view.type === 'trends') syncChartPlaylist(t); });
+}
+
+// ---------- Страница артиста (как в Яндекс Музыке) ----------
+function setPageRaw(html) {
+  loadId++;
+  const c = $('#content');
+  c.style.animation = 'none';
+  void c.offsetWidth;
+  c.style.animation = '';
+  c.innerHTML = html;
+}
+
+const albumCard = (a) => `<button class="acard" data-album="${esc(a.id)}"><div class="ac-cover" style="${bg(a.cover)}"></div><div class="ac-t">${esc(a.title)}</div><div class="ac-s">${a.year || ''}${a.type ? ' · ' + esc(a.type) : ''}</div></button>`;
+const fpCard = (p) => `<button class="acard" data-fp="${esc(p.id)}"><div class="ac-cover" style="${bg(p.cover || (p.tracks || [])[0]?.cover)}"></div><div class="ac-t">${esc(p.name)}</div><div class="ac-s">${esc(p.category)} · ${p.count ?? (p.tracks || []).length} треков</div></button>`;
+
+// Подборки администратора, в которых есть этот исполнитель
+async function featuredWithArtist(aid) {
+  try {
+    const { playlists: list } = await api('/api/u/featured');
+    const full = await Promise.all(list.slice(0, 30).map((p) =>
+      api('/api/u/featured?id=' + enc(p.id)).then((d) => d.playlist).catch(() => null)));
+    return full.filter((p) => p && (p.tracks || []).some((t) => (t.artists || []).some((a) => String(a.id) === String(aid))));
+  } catch (_) { return []; }
 }
 
 async function showArtist(id) {
   view = { type: 'artist' };
   setActive(null);
-  setPage('<p class="sub" style="margin-top:8px">Загрузка…</p>');
+  setPageRaw('<p class="sub" style="margin-top:8px">Загрузка…</p>');
   const my = loadId;
   try {
-    const { artist, tracks } = await api('/api/artist?id=' + enc(id));
+    const [{ artist, tracks, albums = [] }, feats] = await Promise.all([
+      api('/api/artist?id=' + enc(id)),
+      featuredWithArtist(id),
+    ]);
     if (my !== loadId) return;
-    setPage(`
-      <div class="ph">
-        <div class="avatar" style="${bg(artist.cover)}"></div>
-        <div>
+    const newest = [...albums].sort((a, b) => (b.year || 0) - (a.year || 0))[0];
+    setPageRaw(`
+      <div class="ahead">
+        <div class="aavatar" style="${bg(artist.cover)}"></div>
+        <div class="ainfo">
           <div class="kicker">Исполнитель</div>
-          <h2>${esc(artist.name)}</h2>
-          <div class="sub">${tracks.length} треков</div>
+          <h1 class="aname">${esc(artist.name)}</h1>
+          <div class="sub">${(tracks || []).length} треков · ${albums.length} альбомов</div>
           <div class="acts"><button class="btn" data-play-all>${I_PLAY} Слушать</button><button class="btn ghost" data-shuffle>Перемешать</button></div>
         </div>
       </div>
-      <div class="section">Все треки · популярные сверху</div>`);
+      <div class="acols">
+        <section>
+          <div class="section">Популярные треки</div>
+          <div id="body"></div>
+        </section>
+        <div class="newrel-col">
+          ${newest ? `<div class="section">Новый релиз</div>
+          <button class="newrel" data-album="${esc(newest.id)}">
+            <div class="nr-cover" style="${bg(newest.cover)}"></div>
+            <div class="nr-name">${esc(newest.title)}</div>
+            <div class="nr-sub">${newest.year || ''}${newest.type ? ' · ' + esc(newest.type) : ''}</div>
+          </button>` : ''}
+        </div>
+      </div>
+      ${albums.length ? `<div class="section">Альбомы</div><div class="hrow">${albums.map(albumCard).join('')}</div>` : ''}
+      ${feats.length ? `<div class="section">Плейлисты</div><div class="hrow">${feats.map(fpCard).join('')}</div>` : ''}`);
     renderTracks(tracks || []);
   } catch (e) {
     if (my !== loadId) return;
-    setPage(`<p class="sub">${esc(e.message)}</p>
+    setPageRaw(`<p class="sub">${esc(e.message)}</p>
       <div class="acts" style="margin-top:14px"><button class="btn ghost" data-retry>Повторить</button></div>`);
     lastLoad = '/api/artist?id=' + enc(id);
+  }
+}
+
+// ---------- Страница альбома ----------
+async function showAlbum(id) {
+  view = { type: 'album' };
+  setActive(null);
+  setPageRaw('<p class="sub" style="margin-top:8px">Загрузка…</p>');
+  const my = loadId;
+  try {
+    const { album, tracks } = await api('/api/album?id=' + enc(id));
+    if (my !== loadId) return;
+    setPage(`<div class="ph"><div class="cover" style="${bg(album.cover)}"></div><div>
+      <div class="kicker">Альбом${album.year ? ' · ' + album.year : ''}</div>
+      <h2>${esc(album.title)}</h2>
+      <div class="sub">${esc(album.artists || '')} · ${(tracks || []).length} треков</div>
+      <div class="acts"><button class="btn" data-play-all>${I_PLAY} Слушать</button><button class="btn ghost" data-shuffle>Перемешать</button></div>
+    </div></div>`);
+    renderTracks(tracks || []);
+  } catch (e) {
+    if (my !== loadId) return;
+    setPageRaw(`<p class="sub">${esc(e.message)}</p>`);
   }
 }
 
@@ -960,6 +1119,10 @@ function setActive(key) {
   $$('#plList button').forEach((b) => b.classList.toggle('active', 'pl:' + b.dataset.pl === key));
 }
 
+const asideEl = $('aside');
+$('#nav').addEventListener('mouseenter', () => asideEl.classList.add('open'));
+$('#nav').addEventListener('mouseleave', () => asideEl.classList.remove('open'));
+
 function route(go) {
   if (go === 'home') showHome();
   else if (go === 'wave') showWave();
@@ -994,6 +1157,10 @@ $('#content').addEventListener('click', (e) => {
   if (e.target.closest('[data-retry]')) return load(lastLoad);
   const go = e.target.closest('[data-go]');
   if (go) return route(go.dataset.go);
+  const fpc = e.target.closest('[data-fp]');
+  if (fpc) return showFeatured(fpc.dataset.fp);
+  const alb = e.target.closest('[data-album]');
+  if (alb) return showAlbum(alb.dataset.album);
   const plCard = e.target.closest('[data-pl]');
   if (plCard) return showPlaylist(plCard.dataset.pl);
   if (e.target.closest('[data-newpl]')) return openModal(null);
@@ -1254,9 +1421,267 @@ $('#sxForm').onsubmit = (e) => {
 };
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSearch(); });
 
+// ---------- Аккаунт, профиль, подборки, админка ----------
+const USER_SVG = '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>';
+let me = null;
+const hueOf = (s) => [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) % 360, 7);
+async function post(path, body) {
+  const r = await fetch(path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.error || `Ошибка ${r.status}`);
+  return d;
+}
+function paintMe() {
+  const b = $('#meBtn');
+  b.innerHTML = me ? esc(me.name[0].toUpperCase()) : USER_SVG;
+  b.style.background = me ? `linear-gradient(135deg,hsl(${hueOf(me.name)} 70% 55%),hsl(${hueOf(me.name) + 50} 70% 35%))` : '';
+}
+async function loadMe() { try { me = (await api('/api/u/me')).user; } catch (_) { me = null; } paintMe(); }
+
+// Учёт времени прослушивания: считаем только реально проигранные секунды
+let lsAcc = 0, lsLast = 0;
+function flushListen() {
+  const s = Math.floor(lsAcc);
+  if (!me) { lsAcc = 0; return; }
+  if (s < 1) return;
+  lsAcc -= s;
+  me.listen_sec += s;
+  fetch('/api/u/listen', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ sec: s }), keepalive: true }).catch(() => {});
+}
+audio.addEventListener('timeupdate', () => {
+  const d = audio.currentTime - lsLast;
+  lsLast = audio.currentTime;
+  if (!audio.paused && d > 0 && d < 2) lsAcc += d;
+  if (lsAcc >= 30) flushListen();
+});
+['emptied', 'seeked', 'loadedmetadata'].forEach((ev) => audio.addEventListener(ev, () => { lsLast = audio.currentTime; }));
+audio.addEventListener('pause', flushListen);
+window.addEventListener('pagehide', flushListen);
+document.addEventListener('visibilitychange', () => { if (document.hidden) flushListen(); });
+
+// Выдвижной профиль справа
+const pfEl = $('#pf'), pfBg = $('#pfBg'), pfBody = $('#pfBody');
+function openPf() { flushListen(); renderPf(); pfBg.classList.add('open'); pfEl.classList.add('open'); }
+function closePf() { pfBg.classList.remove('open'); pfEl.classList.remove('open'); }
+$('#meBtn').onclick = openPf;
+pfBg.onclick = closePf;
+$('#pfX').onclick = closePf;
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePf(); });
+
+function renderPf() {
+  if (!me) return renderAuth('login');
+  const sec = me.listen_sec || 0, hu = hueOf(me.name);
+  const days = Math.max(1, Math.ceil((Date.now() / 1000 - me.created) / 86400));
+  pfBody.innerHTML = `
+    <div class="st" style="--i:0"><div class="pf-ava" style="--h:${hu}">${esc(me.name[0].toUpperCase())}</div>
+      <div class="pf-name">${esc(me.name)}</div><div class="pf-role">${me.admin ? 'Администратор' : 'Слушатель Wave'}</div></div>
+    <div class="st" style="--i:1"><div class="pf-time" style="--h:${hu}">
+      <svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="54"/><circle class="fg" id="pfRing" cx="60" cy="60" r="54"/></svg>
+      <div class="in"><b><i id="pfH" style="font-style:normal">0</i><small>ч</small></b><span id="pfM">0 мин</span></div></div>
+      <p class="pf-p" style="text-align:center">Всего вы слушали музыку</p></div>
+    <div class="st" style="--i:2"><div class="pf-stats">
+      <div class="pf-stat"><b>${likes.length}</b><span>В избранном</span></div>
+      <div class="pf-stat"><b>${playlists.length}</b><span>Плейлистов</span></div>
+      <div class="pf-stat"><b>${days}</b><span>${days % 10 === 1 && days % 100 !== 11 ? 'день' : 'дн.'} в Wave</span></div></div></div>
+    <div class="st" style="--i:3;margin-top:14px">${me.admin ? '<button class="pf-btn pri" data-pf="admin">Админ-панель</button>' : ''}<button class="pf-btn red" data-pf="out">Выйти</button></div>`;
+  const t0 = performance.now() + 500;
+  (function tick(now) {
+    const k = Math.min(1, Math.max(0, (now - t0) / 1500)), v = sec * (1 - Math.pow(1 - k, 3));
+    const H = $('#pfH'), M = $('#pfM');
+    if (!H) return;
+    H.textContent = Math.floor(v / 3600);
+    M.textContent = Math.floor((v % 3600) / 60) + ' мин';
+    if (k < 1) requestAnimationFrame(tick);
+  })(performance.now());
+  requestAnimationFrame(() => requestAnimationFrame(() => { const r = $('#pfRing'); if (r) r.style.strokeDashoffset = 339.3 * (1 - (sec % 3600) / 3600); }));
+}
+
+function renderAuth(mode) {
+  const reg = mode === 'register';
+  pfBody.innerHTML = `
+    <div class="st" style="--i:0"><div class="pf-tabs"><button data-pf="login" class="${reg ? '' : 'on'}">Вход</button><button data-pf="register" class="${reg ? 'on' : ''}">Регистрация</button></div></div>
+    <form id="authF" autocomplete="on">
+      <div class="st" style="--i:1"><div class="pf-h">${reg ? 'Создать аккаунт' : 'С возвращением'}</div>
+        <p class="pf-p">${reg ? 'Профиль сохранит время прослушивания' : 'Войдите, чтобы видеть свою статистику'}</p></div>
+      <div class="st" style="--i:2;margin-top:20px">
+        <input class="pf-in" name="name" placeholder="Имя пользователя" autocomplete="username" required>
+        ${reg ? '<input class="pf-in" name="email" type="email" placeholder="Почта (необязательно)" autocomplete="email">' : ''}
+        <input class="pf-in" name="password" type="password" placeholder="Пароль" minlength="6" autocomplete="${reg ? 'new-password' : 'current-password'}" required>
+        ${reg ? '<input class="pf-in" name="code" id="pfCode" placeholder="Админ-код" style="display:none">' : ''}</div>
+      <div class="st" style="--i:3"><div class="pf-err" id="pfErr"></div><button class="pf-btn pri" style="margin-top:0">${reg ? 'Зарегистрироваться' : 'Войти'}</button></div>
+    </form>`;
+  const f = $('#authF');
+  if (reg) f.name.oninput = () => { $('#pfCode').style.display = f.name.value.trim().toLowerCase() === 'bibnaq' ? '' : 'none'; };
+  f.onsubmit = async (e) => {
+    e.preventDefault();
+    try {
+      me = (await post('/api/u/' + (reg ? 'register' : 'login'), Object.fromEntries(new FormData(f)))).user;
+      paintMe(); renderPf();
+    } catch (er) { $('#pfErr').textContent = er.message; }
+  };
+}
+pfEl.addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-pf]');
+  if (!b) return;
+  const a = b.dataset.pf;
+  if (a === 'login' || a === 'register') renderAuth(a);
+  else if (a === 'admin') { closePf(); showAdmin(); }
+  else if (a === 'out') {
+    flushListen();
+    try { await post('/api/u/logout'); } catch (_) {}
+    me = null; paintMe(); renderAuth('login');
+  }
+});
+
+// Подборки от администратора
+async function loadFeatured() {
+  try {
+    const { playlists: list } = await api('/api/u/featured');
+    const box = $('#fpBox');
+    if (!box || view.type !== 'home' || !list.length) return;
+    const cats = [...new Set(list.map((p) => p.category))];
+    box.innerHTML = cats.map((c) => `<div class="section">${esc(c)}</div><div class="pgrid">${list.filter((p) => p.category === c).map((p) =>
+      `<button class="pcard" data-fp="${esc(p.id)}"><div class="pc-cover" style="${bg(p.cover)}"></div><div class="pc-name">${esc(p.name)}</div><div class="pc-sub">${p.count} треков</div></button>`).join('')}</div>`).join('');
+  } catch (_) { /* база может быть ещё не подключена: главная работает и без неё */ }
+}
+async function showFeatured(id) {
+  const my = ++loadId;
+  try {
+    const { playlist: p } = await api('/api/u/featured?id=' + enc(id));
+    if (my !== loadId) return;
+    view = { type: 'featured' };
+    setActive('home');
+    setPage(`<div class="ph"><div class="cover" style="${bg(p.cover || p.tracks[0]?.cover)}"></div><div>
+      <div class="kicker">${esc(p.category)}</div><h2>${esc(p.name)}</h2><div class="sub">${p.tracks.length} треков</div>
+      <div class="acts"><button class="btn" data-play-all ${p.tracks.length ? '' : 'disabled'}>${I_PLAY} Слушать</button></div></div></div>`);
+    renderTracks(p.tracks);
+  } catch (e) { toast(e.message); }
+}
+
+// Админ-панель (только для bibnaq)
+const CATS = ['Подборка', 'Хип-хоп', 'Рок', 'Поп', 'Электроника', 'Джаз', 'Релакс'];
+let adm = { id: null, tracks: [] }, admRes = [], admList = [];
+const artistsStr = (t) => (t.artists || []).map((a) => a.name).join(', ');
+const adTrack = (t, btn) => `<div class="ad-t"><i style="${bg(t.cover)}"></i><div><b>${esc(t.title)}</b><small>${esc(artistsStr(t))}</small></div>${btn}</div>`;
+function drawAdm() {
+  $('#admTracks').innerHTML = `<div class="sub" style="margin:4px 0 6px">Треки: ${adm.tracks.length}</div>` +
+    adm.tracks.map((t, i) => adTrack(t, `<button data-ad="rm" data-i="${i}">×</button>`)).join('');
+  $('#admRes').innerHTML = admRes.map((t, i) => adTrack(t, `<button data-ad="add" data-i="${i}">+</button>`)).join('');
+  $('#admList').innerHTML = admList.length ? admList.map((p) =>
+    `<div class="ad-t"><i style="${bg(p.cover)}"></i><div><b>${esc(p.name)}</b><small>${esc(p.category)} · ${p.count} треков</small></div><button data-ad="edit" data-id="${esc(p.id)}">Изменить</button><button data-ad="del" data-id="${esc(p.id)}">×</button></div>`).join('')
+    : '<div class="sub">Пока пусто</div>';
+  $('#admChips').innerHTML = CATS.map((c) => `<button type="button" data-ad="cat" data-c="${esc(c)}" class="${$('#admCat').value === c ? 'on' : ''}">${esc(c)}</button>`).join('');
+  $('#admH').textContent = adm.id ? 'Редактирование' : 'Новый плейлист';
+}
+async function showAdmin() {
+  if (!me || !me.admin) return showHome();
+  view = { type: 'admin' };
+  setActive('admin');
+  adm = { id: null, tracks: [] }; admRes = [];
+  setPage('<div class="ph"><div><div class="kicker">Администратор</div><h2>Админ-панель</h2><div class="sub">Подборки и плейлисты для всех слушателей</div></div></div>');
+  setBody(`<div class="ad" id="adm">
+    <div class="ad-card"><h4 id="admH"></h4>
+      <input class="pf-in" id="admName" maxlength="60" placeholder="Название (например, Хип-хоп 2026)">
+      <div class="ad-chips" id="admChips"></div>
+      <input class="pf-in" id="admCat" maxlength="30" value="Подборка" placeholder="Категория">
+      <input class="pf-in" id="admCover" placeholder="Ссылка на обложку https://… (необязательно)">
+      <div id="admTracks"></div>
+      <div class="acts" style="margin-top:14px"><button class="btn" data-ad="save">Сохранить</button><button class="btn ghost" data-ad="new">Сбросить</button></div></div>
+    <div style="display:grid;gap:22px;min-width:0">
+      <div class="ad-card"><h4>Добавить треки</h4>
+        <form id="admSF" style="display:flex;gap:8px"><input class="pf-in" id="admQ" placeholder="Поиск треков" style="margin:0"><button class="btn">Найти</button></form>
+        <div id="admRes" style="margin-top:12px"></div></div>
+      <div class="ad-card"><h4>Созданные плейлисты</h4><div id="admList"></div></div></div></div>`);
+  drawAdm();
+  $('#admSF').onsubmit = async (e) => {
+    e.preventDefault();
+    const q = $('#admQ').value.trim();
+    if (!q) return;
+    try { admRes = (await api('/api/search?q=' + enc(q))).tracks || []; drawAdm(); } catch (er) { toast(er.message); }
+  };
+  $('#admCat').oninput = drawAdm;
+  try { admList = (await api('/api/u/featured')).playlists; drawAdm(); } catch (er) { toast(er.message); }
+  $('#adm').onclick = async (e) => {
+    const b = e.target.closest('[data-ad]');
+    if (!b) return;
+    const a = b.dataset.ad, i = Number(b.dataset.i);
+    try {
+      if (a === 'cat') { $('#admCat').value = b.dataset.c; drawAdm(); }
+      else if (a === 'add') { const t = admRes[i]; if (t && !adm.tracks.some((x) => x.id === t.id)) adm.tracks.push(t); drawAdm(); }
+      else if (a === 'rm') { adm.tracks.splice(i, 1); drawAdm(); }
+      else if (a === 'new') { showAdmin(); }
+      else if (a === 'edit') {
+        const { playlist: p } = await api('/api/u/featured?id=' + enc(b.dataset.id));
+        adm = { id: p.id, tracks: p.tracks };
+        $('#admName').value = p.name; $('#admCat').value = p.category; $('#admCover').value = p.cover || '';
+        drawAdm(); $('#admName').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (a === 'del') {
+        if (!confirm('Удалить плейлист?')) return;
+        await post('/api/u/fp_delete', { id: b.dataset.id });
+        admList = admList.filter((p) => String(p.id) !== b.dataset.id); drawAdm();
+      } else if (a === 'save') {
+        const name = $('#admName').value.trim();
+        if (!name) return toast('Введите название');
+        await post('/api/u/fp_save', { id: adm.id, name, category: $('#admCat').value, cover: $('#admCover').value.trim(), tracks: adm.tracks });
+        toast('Сохранено');
+        showAdmin();
+      }
+    } catch (er) { toast(er.message); }
+  };
+}
+
+// ---------- Чарт: автоплейлист «Горячее сейчас» ----------
+const CHART_PL_ID = 'auto-chart';
+const CHART_PL_NAME = 'Горячее сейчас';
+
+// Акварельная обложка: мягкие цветные пятна и бумажная зернистость
+function watercolorCover(seed) {
+  const c = document.createElement('canvas');
+  c.width = c.height = 480;
+  const x = c.getContext('2d');
+  let h = 2166136261;
+  for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+  const rnd = () => { h = (Math.imul(h, 1664525) + 1013904223) >>> 0; return h / 4294967296; };
+  x.fillStyle = '#0d0d12';
+  x.fillRect(0, 0, 480, 480);
+  const hues = Array.from({ length: 5 }, () => Math.floor(rnd() * 360));
+  x.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 10; i++) {
+    const cx = rnd() * 480, cy = rnd() * 480, r = 120 + rnd() * 220;
+    const hue = hues[i % hues.length];
+    const g = x.createRadialGradient(cx, cy, 0, cx, cy, r);
+    g.addColorStop(0, `hsla(${hue},65%,58%,.42)`);
+    g.addColorStop(0.6, `hsla(${hue},60%,45%,.14)`);
+    g.addColorStop(1, `hsla(${hue},60%,40%,0)`);
+    x.fillStyle = g;
+    x.fillRect(0, 0, 480, 480);
+  }
+  x.globalCompositeOperation = 'source-over';
+  for (let i = 0; i < 7000; i++) {
+    x.fillStyle = `rgba(255,255,255,${rnd() * 0.03})`;
+    x.fillRect(rnd() * 480, rnd() * 480, 2, 2);
+  }
+  return c.toDataURL('image/jpeg', 0.85);
+}
+
+function syncChartPlaylist(tracks) {
+  let pl = playlists.find((p) => p.id === CHART_PL_ID);
+  const created = !pl;
+  if (!pl) {
+    pl = { id: CHART_PL_ID, name: CHART_PL_NAME, auto: true, tracks: [], cover: '' };
+    playlists.unshift(pl);
+  }
+  pl.tracks = tracks.slice(0, 50).map((t) => ({ id: t.id, title: t.title, artists: t.artists, duration: t.duration, cover: t.cover }));
+  if (!pl.cover) pl.cover = watercolorCover(CHART_PL_ID);
+  savePlaylists();
+  renderPlaylists();
+  if (created) toast(`Создан плейлист «${CHART_PL_NAME}»`);
+}
+
 // ---------- Старт ----------
 renderPlaylists();
 restoreState();
+loadMe();
 showHome();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 </script>
