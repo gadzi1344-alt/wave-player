@@ -65,10 +65,6 @@
   @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
   .section{font-size:16px;font-weight:700;margin:4px 0 14px;letter-spacing:-.2px}
   .sub{color:var(--muted);font-size:13px}
-  .chips{display:flex;gap:8px;margin-top:16px}
-  .chip{padding:7px 15px;border-radius:999px;background:var(--surface);color:var(--muted);font-size:13px;transition:background .2s,color .2s}
-  .chip:hover{color:var(--txt)}
-  .chip.on{background:var(--txt);color:#000}
 
   /* ---------- Track rows ---------- */
   .list{display:flex;flex-direction:column;gap:2px}
@@ -142,25 +138,6 @@
 
   .toast{position:fixed;top:18px;right:18px;z-index:40;max-width:340px;background:var(--surface2);border:1px solid #2a2a2a;padding:12px 16px;border-radius:12px;font-size:13px;color:#e6e6e6;box-shadow:0 12px 30px #0008;display:none;animation:pop .3s var(--ease) both}
 
-  /* ---------- Mobile ---------- */
-  @media (max-width:760px){
-    .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
-    aside{flex-direction:row;overflow-x:auto;overflow-y:hidden;padding:10px 12px;border-right:0;border-bottom:1px solid var(--line);gap:6px;align-items:center}
-    .brand,.label{display:none}
-    .nav{display:flex;gap:6px}
-    .nav button{width:auto;white-space:nowrap}
-    #plList{display:flex;gap:6px}
-    #plList button{width:auto;white-space:nowrap}
-    main{padding:20px 16px 30px}
-    .player{grid-template-columns:1fr;height:auto;padding:12px 16px;gap:10px}
-    .np{order:1}
-    .center{order:0;justify-content:center;gap:12px}
-    .mini{display:none}
-    .ctrl{width:100%}
-    .vol{display:none}
-    .act button{opacity:1}
-    .ph{flex-direction:column;align-items:flex-start}
-  }
   /* ---------- Полноэкранный плеер ---------- */
   .mini,.np{cursor:pointer}
   .mini{transition:transform .3s var(--ease)}
@@ -188,7 +165,24 @@
   .full .btns .main svg{width:28px;height:28px}
   .full .bar{font-size:12px}
 
+  /* ---------- Mobile ---------- */
   @media (max-width:760px){
+    .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+    aside{flex-direction:row;overflow-x:auto;overflow-y:hidden;padding:10px 12px;border-right:0;border-bottom:1px solid var(--line);gap:6px;align-items:center}
+    .brand,.label{display:none}
+    .nav{display:flex;gap:6px}
+    .nav button{width:auto;white-space:nowrap}
+    #plList{display:flex;gap:6px}
+    #plList button{width:auto;white-space:nowrap}
+    main{padding:20px 16px 30px}
+    .player{grid-template-columns:1fr;height:auto;padding:12px 16px;gap:10px}
+    .np{order:1}
+    .center{order:0;justify-content:center;gap:12px}
+    .mini{display:none}
+    .ctrl{width:100%}
+    .vol{display:none}
+    .act button{opacity:1}
+    .ph{flex-direction:column;align-items:flex-start}
     .full .btns{gap:22px}
     .full .btns .main{width:60px;height:60px}
   }
@@ -255,17 +249,6 @@
   </div>
 </div>
 
-<div class="modal-bg" id="modal">
-  <form class="modal" id="modalForm">
-    <h3>Новый плейлист</h3>
-    <input id="plName" maxlength="40" placeholder="Название" autocomplete="off">
-    <div class="mbtns">
-      <button type="button" class="btn ghost" data-close>Отмена</button>
-      <button type="submit" class="btn">Создать</button>
-    </div>
-  </form>
-</div>
-
 <div class="full" id="full">
   <div class="bgimg" id="fBg"></div>
   <button class="close" id="fClose" title="Свернуть">
@@ -292,6 +275,17 @@
   </div>
 </div>
 
+<div class="modal-bg" id="modal">
+  <form class="modal" id="modalForm">
+    <h3>Новый плейлист</h3>
+    <input id="plName" maxlength="40" placeholder="Название" autocomplete="off">
+    <div class="mbtns">
+      <button type="button" class="btn ghost" data-close>Отмена</button>
+      <button type="submit" class="btn">Создать</button>
+    </div>
+  </form>
+</div>
+
 <div class="toast" id="toast"></div>
 <audio id="audio" preload="none"></audio>
 
@@ -304,10 +298,14 @@ audio.volume = 0.8;
 const I_PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
 const I_PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
 
-let queue = [];            // треки открытой страницы
-let currentId = null;      // id играющего трека
+let queue = [];         // треки открытой страницы
+let playQueue = [];     // очередь текущего воспроизведения
+let currentId = null;   // id играющего трека
+let pendingSeek = 0;    // позиция, куда перемотать после загрузки трека
+let restoredTime = 0;   // позиция трека, восстановленного после перезагрузки
+let loadId = 0;         // защита от гонки запросов
+let lastLoad = null;    // последний путь загрузки (для кнопки «Повторить»)
 let view = { type: 'home' };
-let chartOpt = 'russia';
 let playlists = JSON.parse(localStorage.getItem('wave.playlists') || '[]');
 
 const savePlaylists = () => localStorage.setItem('wave.playlists', JSON.stringify(playlists));
@@ -326,15 +324,26 @@ function toast(msg) {
   toastTimer = setTimeout(() => (t.style.display = 'none'), 3500);
 }
 
+// Запрос с таймаутом: если сервер молчит, пользователь получает ошибку, а не вечную загрузку
 async function api(path) {
-  const r = await fetch(path);
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(data.error || `Ошибка ${r.status}`);
-  return data;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 15000);
+  try {
+    const r = await fetch(path, { signal: ctrl.signal });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error || `Ошибка ${r.status}`);
+    return data;
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('Сервер долго не отвечает. Попробуйте ещё раз.');
+    throw e;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 // ---------- Рендер ----------
 function setPage(head) {
+  loadId++; // любые незавершённые загрузки старой страницы больше не применятся
   const c = $('#content');
   c.style.animation = 'none';
   void c.offsetWidth;
@@ -378,13 +387,17 @@ function renderTracks(tracks) {
 
 // Загружает список треков в текущую страницу, не запуская воспроизведение
 async function load(path) {
+  lastLoad = path;
+  const my = ++loadId;
   setBody('<p class="sub">Загрузка…</p>');
   try {
     const { tracks } = await api(path);
+    if (my !== loadId) return;
     renderTracks(tracks || []);
   } catch (e) {
-    setBody('');
-    toast(e.message);
+    if (my !== loadId) return;
+    setBody(`<p class="sub">${esc(e.message)}</p>
+      <div class="acts" style="margin-top:14px"><button class="btn ghost" data-retry>Повторить</button></div>`);
   }
 }
 
@@ -437,8 +450,10 @@ async function showArtist(id) {
   view = { type: 'artist' };
   setActive(null);
   setPage('<p class="sub" style="margin-top:8px">Загрузка…</p>');
+  const my = loadId;
   try {
     const { artist, tracks } = await api('/api/artist?id=' + enc(id));
+    if (my !== loadId) return;
     setPage(`
       <div class="ph">
         <div class="avatar" style="${bg(artist.cover)}"></div>
@@ -452,8 +467,10 @@ async function showArtist(id) {
       <div class="section">Популярные треки</div>`);
     renderTracks(tracks || []);
   } catch (e) {
-    setPage('');
-    toast(e.message);
+    if (my !== loadId) return;
+    setPage(`<p class="sub">${esc(e.message)}</p>
+      <div class="acts" style="margin-top:14px"><button class="btn ghost" data-retry>Повторить</button></div>`);
+    lastLoad = '/api/artist?id=' + enc(id);
   }
 }
 
@@ -478,7 +495,7 @@ function showPlaylist(id) {
   renderTracks(pl.tracks);
 }
 
-// ---------- Воспроизведение (только по явному нажатию) ----------
+// ---------- Воспроизведение ----------
 function setPlayIcon() {
   $('#toggle').innerHTML = audio.paused ? I_PLAY : I_PAUSE;
 }
@@ -487,14 +504,54 @@ function markPlaying() {
   $$('.row').forEach((r) => r.classList.toggle('playing', r.dataset.id === currentId));
 }
 
-async function play(i) {
-  if (i < 0 || i >= queue.length) return;
-  const t = queue[i];
-  currentId = t.id;
+function showNowTrack(t) {
   $('#nowTitle').textContent = t.title;
   $('#nowArtist').textContent = typeof t.artists === 'string' ? t.artists : (t.artists || []).map((a) => a.name).join(', ');
   $('#nowCover').style.cssText = bg(t.cover);
+}
+
+// Сохраняет текущий трек, очередь, позицию и громкость в браузере
+function saveState(force) {
+  const now = Date.now();
+  if (!force && now - (saveState.last || 0) < 3000) return;
+  saveState.last = now;
+  localStorage.setItem('wave.state', JSON.stringify({
+    list: playQueue.slice(0, 200),
+    currentId,
+    time: audio.src ? audio.currentTime : restoredTime,
+    vol: audio.volume,
+  }));
+}
+
+// Восстанавливает последний трек при открытии сайта (без автозапуска)
+function restoreState() {
+  try {
+    const s = JSON.parse(localStorage.getItem('wave.state') || 'null');
+    if (!s || !s.currentId || !Array.isArray(s.list)) return;
+    const t = s.list.find((x) => x.id === s.currentId);
+    if (!t) return;
+    playQueue = s.list;
+    currentId = s.currentId;
+    restoredTime = s.time || 0;
+    showNowTrack(t);
+    $('#cur').textContent = fmt(restoredTime);
+    if (s.vol != null) {
+      audio.volume = s.vol;
+      $('#vol').value = s.vol;
+      $('#vol').style.setProperty('--p', s.vol * 100 + '%');
+    }
+  } catch (e) { /* повреждённые данные игнорируем */ }
+}
+
+async function play(i, seek = 0, list = queue) {
+  if (i < 0 || i >= list.length) return;
+  playQueue = list;
+  const t = list[i];
+  currentId = t.id;
+  pendingSeek = seek;
+  showNowTrack(t);
   markPlaying();
+  saveState(true);
   try {
     const { url } = await api('/api/stream?id=' + enc(t.id));
     audio.src = url;
@@ -504,21 +561,26 @@ async function play(i) {
   }
 }
 
-const currentIndex = () => queue.findIndex((t) => t.id === currentId);
+const currentIndex = () => playQueue.findIndex((t) => t.id === currentId);
 
 $('#toggle').onclick = () => {
   if (!currentId) return queue.length && play(0);
+  // после перезагрузки трек восстановлен, но не загружен: загружаем с сохранённой позиции
+  if (!audio.src) return play(playQueue.findIndex((t) => t.id === currentId), restoredTime, playQueue);
   audio.paused ? audio.play() : audio.pause();
 };
-$('#next').onclick = () => queue.length && play((currentIndex() + 1) % queue.length);
+$('#next').onclick = () => playQueue.length && play((currentIndex() + 1) % playQueue.length, 0, playQueue);
 $('#prev').onclick = () => {
-  if (!queue.length) return;
+  if (!playQueue.length) return;
   const i = currentIndex();
-  play(i <= 0 ? queue.length - 1 : i - 1);
+  play(i <= 0 ? playQueue.length - 1 : i - 1, 0, playQueue);
 };
 audio.onended = () => $('#next').onclick();
 audio.onplay = () => { setPlayIcon(); document.body.classList.remove('paused'); };
-audio.onpause = () => { setPlayIcon(); document.body.classList.add('paused'); };
+audio.onpause = () => { setPlayIcon(); document.body.classList.add('paused'); saveState(true); };
+audio.addEventListener('loadedmetadata', () => {
+  if (pendingSeek) { audio.currentTime = pendingSeek; pendingSeek = 0; }
+});
 
 audio.ontimeupdate = () => {
   const p = (audio.currentTime / audio.duration) * 100 || 0;
@@ -526,6 +588,7 @@ audio.ontimeupdate = () => {
   $('#seek').style.setProperty('--p', p + '%');
   $('#cur').textContent = fmt(audio.currentTime);
   $('#dur').textContent = fmt(audio.duration);
+  saveState(false);
 };
 $('#seek').oninput = (e) => {
   if (isFinite(audio.duration)) audio.currentTime = (e.target.value / 100) * audio.duration;
@@ -533,8 +596,10 @@ $('#seek').oninput = (e) => {
 $('#vol').oninput = (e) => {
   audio.volume = e.target.value;
   e.target.style.setProperty('--p', e.target.value * 100 + '%');
+  saveState(true);
 };
 $('#vol').style.setProperty('--p', '80%');
+window.addEventListener('beforeunload', () => saveState(true));
 
 // ---------- Плейлисты ----------
 function renderPlaylists() {
@@ -661,13 +726,12 @@ $('#sf').onsubmit = (e) => {
   if (q) showSearch(q);
 };
 
-// Один обработчик на всю страницу: артисты, чарты, строки, кнопки
+// Один обработчик на всю страницу
 $('#content').addEventListener('click', (e) => {
+  if (e.target.closest('[data-retry]')) return load(lastLoad);
+
   const artist = e.target.closest('[data-artist]');
   if (artist) { e.stopPropagation(); return showArtist(artist.dataset.artist); }
-
-  const chart = e.target.closest('[data-chart]');
-  if (chart) { chartOpt = chart.dataset.chart; return showTrends(); }
 
   const row = e.target.closest('.row');
   const act = e.target.closest('[data-act]');
@@ -687,7 +751,6 @@ $('#content').addEventListener('click', (e) => {
 // ---------- Полноэкранный плеер ----------
 const fEl = $('#full');
 
-// Копирует состояние из нижней панели и аудио в полноэкранный вид
 function syncFull() {
   const cs = $('#nowCover').style.backgroundImage;
   $('#fCover').style.backgroundImage = cs;
@@ -729,8 +792,9 @@ $('#fSeek').oninput = (e) => {
 };
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeFull(); });
 
-// ---------- Старт (без автовоспроизведения) ----------
+// ---------- Старт ----------
 renderPlaylists();
+restoreState();
 showHome();
 </script>
 </body>
