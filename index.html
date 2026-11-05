@@ -85,7 +85,7 @@
   #plList .empty{color:var(--dim);font-size:13px;padding:6px 12px}
 
   /* ---------- Main ---------- */
-  main{grid-column:2;overflow-y:auto;padding:28px 44px 40px;min-width:0}
+  main{grid-column:2;overflow-y:auto;padding:28px 44px 170px;min-width:0}
   .search{position:relative;max-width:460px;width:100%;margin:0 auto 34px}
   .search input{cursor:pointer}
   .search input{width:100%;padding:12px 16px 12px 42px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:14px;outline:none;transition:border-color .25s}
@@ -469,7 +469,9 @@
   .ainfo{min-width:0}
   .aname{font-size:clamp(40px,5.5vw,72px);font-weight:900;letter-spacing:-2px;line-height:1;margin:6px 0 10px}
   .ainfo .acts{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
-  .acols{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:36px;align-items:start;margin-bottom:10px}
+  .acols{display:grid;grid-template-columns:minmax(0,1fr);gap:40px;margin-bottom:10px}
+  .newrel-col{width:min(320px,100%)}
+  .more{display:flex;justify-content:center;margin:18px 0 4px}
   .newrel{display:block;width:100%;text-align:left;animation:rise .6s var(--ease) both;transition:transform .35s var(--ease)}
   .newrel:hover{transform:translateY(-3px)}
   .nr-cover{width:100%;aspect-ratio:1;border-radius:16px;background:var(--surface2) center/cover;box-shadow:0 20px 40px #0009}
@@ -720,13 +722,19 @@ function row(t, i) {
     </div>`;
 }
 
+let visibleN = 15;   // сколько треков показывать на странице артиста
 function renderTracks(tracks) {
   queue = tracks;
   if (!tracks.length) {
     setBody(`<p class="sub">${view.type === 'playlist' ? 'В плейлисте пока пусто. Добавляйте треки кнопкой «+».' : view.type === 'likes' ? 'Здесь появятся треки, которые вы лайкнули ♥' : 'Ничего не найдено'}</p>`);
     return;
   }
-  setBody(`<div class="list${view.type === 'trends' ? ' chart' : ''}">${tracks.map(row).join('')}</div>`);
+  const limited = view.type === 'artist' && tracks.length > visibleN;
+  const shown = limited ? tracks.slice(0, visibleN) : tracks;
+  const more = limited
+    ? `<div class="more"><button class="btn ghost" data-more>Показать ещё ${Math.min(15, tracks.length - visibleN)}</button></div>`
+    : '';
+  setBody(`<div class="list${view.type === 'trends' ? ' chart' : ''}">${shown.map(row).join('')}</div>${more}`);
   markPlaying();
 }
 
@@ -748,6 +756,35 @@ async function load(path) {
 }
 
 // ---------- Страницы ----------
+const shuffleArr = (arr) => {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+
+// Подборка: треки из смеси исполнителей, которых пользователь лайкал
+async function homeMix() {
+  const fromLikes = [...new Set(likes.flatMap((t) => (t.artists || []).map((a) => a.name)))];
+  const pool = fromLikes.length
+    ? shuffleArr(fromLikes).slice(0, 3)
+    : shuffleArr(['популярные хиты', 'лучшие треки недели', 'топ русский рэп']).slice(0, 3);
+  const lists = await Promise.all(pool.map((q) =>
+    api('/api/search?q=' + enc(q)).then((d) => d.tracks || []).catch(() => [])));
+  const seen = new Set();
+  const out = [];
+  const longest = Math.max(0, ...lists.map((l) => l.length));
+  for (let i = 0; i < longest; i++) {
+    for (const l of lists) {
+      const t = l[i];
+      if (t && !seen.has(t.id)) { seen.add(t.id); out.push(t); }
+    }
+  }
+  return out.slice(0, 30);
+}
+
 function showHome() {
   view = { type: 'home' };
   setActive('home');
@@ -758,9 +795,14 @@ function showHome() {
       <button class="btn" data-wave>${I_PLAY} Моя волна</button>
     </div>
     <div id="fpBox"></div>
-    <div class="section">Популярное</div>`);
-  load('/api/search?q=' + enc('хиты 2026'));
+    <div class="section">Что послушать</div>
+    <div class="sub" style="margin:-8px 0 14px">${likes.length ? 'Подборка по исполнителям, которых вы лайкнули' : 'Подборка популярных треков'}</div>`);
   loadFeatured();
+  setBody('<p class="sub">Подбираем треки…</p>');
+  const my = loadId;
+  homeMix()
+    .then((tracks) => { if (my === loadId && view.type === 'home') renderTracks(tracks); })
+    .catch((e) => { if (my === loadId) setBody(`<p class="sub">${esc(e.message)}</p>`); });
 }
 
 function showWave() {
@@ -819,6 +861,7 @@ async function featuredWithArtist(aid) {
 
 async function showArtist(id) {
   view = { type: 'artist' };
+  visibleN = 15;
   setActive(null);
   setPageRaw('<p class="sub" style="margin-top:8px">Загрузка…</p>');
   const my = loadId;
@@ -1155,6 +1198,7 @@ $('#sf').onsubmit = (e) => {
 // Один обработчик на всю страницу
 $('#content').addEventListener('click', (e) => {
   if (e.target.closest('[data-retry]')) return load(lastLoad);
+  if (e.target.closest('[data-more]')) { visibleN += 15; return renderTracks(queue); }
   const go = e.target.closest('[data-go]');
   if (go) return route(go.dataset.go);
   const fpc = e.target.closest('[data-fp]');
