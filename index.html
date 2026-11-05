@@ -19,15 +19,16 @@
   .app{flex:1;min-height:0;display:grid;grid-template-columns:110px 1fr;position:relative}
 
   /* ---------- Sidebar ---------- */
-  aside{position:absolute;left:12px;top:12px;bottom:12px;width:76px;z-index:15;display:flex;flex-direction:column;gap:2px;padding:26px 14px;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;background:var(--side);border:1px solid var(--line);border-radius:40px;box-shadow:0 20px 50px #0007;transition:width .5s var(--ease),box-shadow .4s}
+  aside{position:absolute;left:12px;top:12px;bottom:12px;width:76px;z-index:15;display:flex;flex-direction:column;gap:2px;padding:26px 0;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;background:transparent;transition:width .5s var(--ease)}
   aside::-webkit-scrollbar{display:none}
-  aside:hover{width:240px;box-shadow:0 30px 70px #000b}
+  aside:hover{width:240px}
+  aside:hover .nav{box-shadow:0 30px 70px #000b}
   .brand{font-weight:800;font-size:19px;letter-spacing:-.4px;padding:2px 12px 26px}
   .nav button{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:10px;color:var(--muted);font-size:14px;font-weight:500;text-align:left;transition:background .25s var(--ease),color .25s}
   .nav button:hover{color:var(--txt);background:var(--surface)}
   .nav button.active{color:var(--txt);background:var(--surface2)}
   .nav svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-  .nav{margin:auto 0;display:flex;flex-direction:column;gap:6px}
+  .nav{margin:auto 0;display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:40px;background:var(--side);border:1px solid var(--line);box-shadow:0 20px 50px #0007;transition:box-shadow .4s}
   .nav button{position:relative}
   .nav button.active::before{content:"";position:absolute;left:-14px;top:24%;bottom:24%;width:3px;border-radius:0 3px 3px 0;background:var(--txt)}
   .nav button svg{transition:transform .25s var(--ease)}
@@ -44,7 +45,7 @@
   aside:not(:hover) .nav span{max-width:0;opacity:0;transform:translateX(-10px)}
   aside:hover .nav span{transition-delay:.12s}
   .nav button{transition:background .25s,color .25s,gap .4s var(--ease),padding .4s var(--ease)}
-  aside:not(:hover) .nav button{gap:0;padding:12px 15px}
+  aside:not(:hover) .nav button{gap:0;padding:12px 20px}
 
   .brand{display:flex;align-items:baseline;white-space:nowrap;overflow:hidden;padding:2px 12px 26px}
   .brand b{font-size:21px;font-weight:900;letter-spacing:-.4px;color:#fff}
@@ -223,7 +224,7 @@
     aside:not(:hover) .nav button{gap:6px;padding:10px 12px}
     aside:not(:hover) #plList{opacity:1;visibility:visible}
     .brand,.label{display:none}
-    .nav{display:flex;gap:6px;margin:0}
+    .nav{display:flex;gap:6px;margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
     .nav button.active::before{display:none}
     .nav button{width:auto;white-space:nowrap}
     #plList{display:flex;gap:6px}
