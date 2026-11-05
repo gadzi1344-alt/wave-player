@@ -382,6 +382,21 @@
     .sx-close{top:calc(env(safe-area-inset-top,0px) + 14px)}
     #sxInput{font-size:26px}
   }
+  /* ---------- Мини-плеер на телефоне (финальные правила, перекрывают старые) ---------- */
+  @media (max-width:760px){
+    .player{position:fixed !important;left:10px;right:10px;bottom:calc(var(--tab) + 10px + env(safe-area-inset-bottom,0px));height:68px !important;padding:0 12px 0 10px !important;border:1px solid #2a2a2a;border-radius:20px;background:#161616f2;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 18px 40px #000a;display:grid !important;grid-template-columns:46px minmax(0,1fr) auto !important;gap:12px !important;align-items:center;z-index:21}
+    .center{display:contents !important}
+    .mini{display:block !important;order:0;width:46px;height:46px;border-radius:12px;background:var(--surface2) center/cover;box-shadow:0 6px 16px #0008}
+    .np{order:1;min-width:0;display:block}
+    .np > div{min-width:0}
+    .np .t{font-size:14px;font-weight:700}
+    .np .a{font-size:12px;margin-top:2px}
+    .ctrl{order:2;width:auto !important;gap:0;display:flex}
+    .ctrl .bar,.vol,#prev,#next{display:none !important}
+    .btns{display:flex;gap:0;justify-content:center}
+    .btns .main{width:44px;height:44px;background:var(--txt);color:#000}
+    .btns .main svg{width:17px;height:17px}
+  }
 </style>
 </head>
 <body>
