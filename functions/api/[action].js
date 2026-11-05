@@ -1,4 +1,4 @@
-// Cloudflare Pages Function: /api/search, /api/chart, /api/artist, /api/stream
+// Cloudflare Pages Function: /api/search, /api/chart, /api/artist, /api/lyrics, /api/stream
 // Токен берется из переменной окружения YAM_TOKEN.
 
 const API = 'https://api.music.yandex.net';
@@ -63,6 +63,29 @@ export async function onRequestGet({ params, request, env }) {
         artist: { id: a.id, name: a.name, cover: img(a.cover?.uri) },
         tracks: (r.popularTracks || []).map(slim),
       });
+    }
+
+    // ---- Текст песни: синхронизированный LRC, если есть, иначе обычный текст ----
+    if (params.action === 'lyrics') {
+      const id = sp.get('id');
+      if (!id) return json({ error: 'Нужен id' }, 400);
+      try {
+        const r = await fetch(`${API}/tracks/${encodeURIComponent(id)}/lyrics`, {
+          method: 'POST',
+          headers: { ...headers, 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ format: 'LRC', timeStamp: String(Date.now()) }),
+          signal: AbortSignal.timeout(12000),
+        });
+        const d = await r.json();
+        const link = d.result?.downloadUrl;
+        if (link) {
+          const lrc = await (await fetch(link, { signal: AbortSignal.timeout(12000) })).text();
+          if (lrc.trim()) return json({ lrc });
+        }
+      } catch (_) { /* переходим к обычному тексту */ }
+      const s = await get(`/tracks/${encodeURIComponent(id)}/supplement`);
+      const text = s.result?.lyrics?.fullLyrics || s.result?.lyrics?.text || '';
+      return json({ text });
     }
 
     // ---- Прямая ссылка на mp3 ----
