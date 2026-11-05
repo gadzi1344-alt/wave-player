@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Wave</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Wave">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <style>
   :root{
     --bg:#0a0a0a; --side:#0e0e0e; --surface:#151515; --surface2:#1d1d1d; --line:#202020;
@@ -180,6 +188,18 @@
 
   .toast{position:fixed;top:18px;right:18px;z-index:40;max-width:340px;background:var(--surface2);border:1px solid #2a2a2a;padding:12px 16px;border-radius:12px;font-size:13px;color:#e6e6e6;box-shadow:0 12px 30px #0008;display:none;animation:pop .3s var(--ease) both}
 
+  /* ---------- Библиотека ---------- */
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:22px}
+  .pcard{display:flex;flex-direction:column;gap:10px;text-align:left;min-width:0;animation:rise .5s var(--ease) both;transition:transform .35s var(--ease)}
+  .pcard:hover{transform:translateY(-4px)}
+  .pc-cover{width:100%;aspect-ratio:1;border-radius:16px;background:var(--surface2) center/cover;box-shadow:0 14px 30px #0008}
+  .pc-cover.heart-card{display:grid;place-items:center;background:linear-gradient(135deg,#2b1a20,#121212)}
+  .pc-cover.heart-card svg{width:48px;height:48px;fill:#f25f7a}
+  .pc-name{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pc-sub{font-size:12px;color:var(--muted)}
+  .tabbar{display:none}
+  aside .pl-wrap{display:none !important}
+
   /* ---------- Полноэкранный поиск ---------- */
   .sx{position:fixed;inset:0;z-index:35;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility .35s}
   .sx.open{opacity:1;visibility:visible}
@@ -293,6 +313,75 @@
     .full .btns{gap:22px}
     .full .btns .main{width:60px;height:60px}
   }
+  /* ---------- Телефон: приложение с нижними вкладками ---------- */
+  @media (max-width:760px){
+    :root{--tab:64px}
+    aside{display:none}
+    .app{grid-template-columns:1fr}
+    main{grid-column:1;padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(var(--tab) + 110px + env(safe-area-inset-bottom,0px))}
+    .search{margin:0 0 22px;max-width:none}
+    .search input{padding:13px 14px 13px 40px;font-size:16px;border-radius:14px}
+    .search svg{left:14px}
+    .hero{padding:4px 0 20px}
+    .hero h1{font-size:34px}
+    .hero p{font-size:14px;margin:8px 0 16px}
+    .hero .btn{padding:12px 22px}
+    h2{font-size:22px}
+    .section{font-size:17px;margin-bottom:10px}
+    .ph{flex-direction:column;align-items:center;text-align:center;gap:14px;margin-bottom:18px}
+    .ph h2{font-size:24px}
+    .ph .cover,.ph .avatar{width:210px;height:210px}
+    .ph .acts{justify-content:center}
+    .row{grid-template-columns:50px 1fr auto;gap:12px;padding:8px}
+    .list.chart .row{grid-template-columns:24px 50px 1fr auto}
+    .rank{font-size:15px}
+    .rank.top{font-size:18px}
+    .thumb{width:50px;height:50px}
+    .dur{display:none}
+    .act{gap:4px}
+    .act button{width:36px;height:36px;opacity:1}
+    .act svg{width:17px;height:17px}
+    .t{font-size:15px}
+    .a{font-size:13px}
+    .pgrid{grid-template-columns:repeat(2,1fr);gap:16px}
+
+    /* Мини-плеер над вкладками */
+    .player{position:fixed;left:10px;right:10px;bottom:calc(var(--tab) + 10px + env(safe-area-inset-bottom,0px));height:68px;z-index:21;display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:12px;padding:0 12px 0 10px;border:1px solid #2a2a2a;border-radius:20px;background:#141414ee;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 18px 40px #000a}
+    .center{display:contents}
+    .mini{order:0;width:46px;height:46px;border-radius:12px}
+    .np{order:1;min-width:0}
+    .ctrl{order:2;width:auto}
+    .ctrl .bar,.vol,#prev,#next{display:none}
+    .btns{gap:0}
+    .btns .main{width:44px;height:44px;background:var(--txt);color:#000}
+    .btns .main svg{width:17px;height:17px}
+    .np .t{font-size:14px}
+    .np .a{font-size:12px}
+
+    /* Нижние вкладки */
+    .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:22;height:calc(var(--tab) + env(safe-area-inset-bottom,0px));padding:6px 6px env(safe-area-inset-bottom,0px);justify-content:space-around;align-items:center;background:#0b0b0bf5;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid var(--line)}
+    .tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:#7d7d7d;font-size:10px;font-weight:600;letter-spacing:.01em;transition:color .3s}
+    .tabbar .ic{width:54px;height:30px;border-radius:999px;display:grid;place-items:center;transition:background .35s var(--ease),transform .35s var(--ease)}
+    .tabbar svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .tabbar button.active{color:#fff}
+    .tabbar button.active .ic{background:#ffffff1f;transform:translateY(-1px)}
+    .tabbar button:active .ic{transform:scale(.92)}
+
+    /* Полноэкранный плеер на телефоне */
+    .full{padding:calc(env(safe-area-inset-top,0px) + 60px) 22px calc(env(safe-area-inset-bottom,0px) + 28px)}
+    .full .close{top:calc(env(safe-area-inset-top,0px) + 14px);left:18px}
+    .full .lyr-btn{top:calc(env(safe-area-inset-top,0px) + 14px);right:18px}
+    .full .big{width:min(78vw,52vh);height:min(78vw,52vh)}
+    .full .ti h3{font-size:22px}
+    .full .btns{gap:26px}
+    .full .btns .main{width:64px;height:64px}
+    .lyrics p{font-size:18px}
+    .list.chart .row{grid-template-columns:24px 50px 1fr auto}
+    .toast{left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 12px);max-width:none}
+    .sx{padding:20px}
+    .sx-close{top:calc(env(safe-area-inset-top,0px) + 14px)}
+    #sxInput{font-size:26px}
+  }
 </style>
 </head>
 <body>
@@ -315,6 +404,8 @@
         <div class="label"><span>Плейлисты</span><button class="plus" id="newPl" title="Новый плейлист">+</button></div>
         <div id="plList"></div>
       </div>
+      <button data-go="library">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Библиотека</span></button>
     </nav>
   </aside>
 
@@ -411,6 +502,13 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<nav class="tabbar" id="tabbar">
+  <button data-go="home"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 12h2l2-6 3 12 3-9 2 6h6"/></svg></span><span>Главная</span></button>
+  <button data-go="wave"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 3v18M7 8v8M17 8v8M3 11v2M21 11v2"/></svg></span><span>Волна</span></button>
+  <button data-go="trends"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span><span>Тренды</span></button>
+  <button data-go="likes"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-9.6-9.2C.9 8.2 2.8 4.5 6.6 4.5c2.3 0 3.8 1.3 5.4 3.1 1.6-1.8 3.1-3.1 5.4-3.1 3.8 0 5.7 3.7 4.2 6.8-2.1 4.6-9.6 9.2-9.6 9.2z"/></svg></span><span>Избранное</span></button>
+  <button data-go="library"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></span><span>Библиотека</span></button>
+</nav>
 <input type="file" id="coverInput" accept="image/*" hidden>
 <audio id="audio" preload="none"></audio>
 
@@ -595,11 +693,11 @@ async function showArtist(id) {
         <div>
           <div class="kicker">Исполнитель</div>
           <h2>${esc(artist.name)}</h2>
-          <div class="sub">${tracks.length} популярных треков</div>
-          <div class="acts"><button class="btn" data-play-all>${I_PLAY} Слушать</button></div>
+          <div class="sub">${tracks.length} треков</div>
+          <div class="acts"><button class="btn" data-play-all>${I_PLAY} Слушать</button><button class="btn ghost" data-shuffle>Перемешать</button></div>
         </div>
       </div>
-      <div class="section">Популярные треки</div>`);
+      <div class="section">Все треки · популярные сверху</div>`);
     renderTracks(tracks || []);
   } catch (e) {
     if (my !== loadId) return;
@@ -838,19 +936,25 @@ function openPopover(anchor, track) {
 
 // ---------- Навигация ----------
 function setActive(key) {
-  $$('#nav button').forEach((b) => b.classList.toggle('active', b.dataset.go === key));
+  $$('#nav button, #tabbar button').forEach((b) => b.classList.toggle('active', b.dataset.go === key));
   $$('#plList button').forEach((b) => b.classList.toggle('active', 'pl:' + b.dataset.pl === key));
 }
 
+function route(go) {
+  if (go === 'home') showHome();
+  else if (go === 'wave') showWave();
+  else if (go === 'trends') showTrends();
+  else if (go === 'likes') showLikes();
+  else if (go === 'library') showLibrary();
+  else if (go === 'search') openSearch();
+}
 $('#nav').onclick = (e) => {
   const b = e.target.closest('button');
-  if (!b) return;
-  const go = b.dataset.go;
-  if (go === 'home') showHome();
-  if (go === 'wave') showWave();
-  if (go === 'search') { openSearch(); setActive('search'); }
-  if (go === 'trends') showTrends();
-  if (go === 'likes') showLikes();
+  if (b && b.dataset.go) route(b.dataset.go);
+};
+$('#tabbar').onclick = (e) => {
+  const b = e.target.closest('button');
+  if (b) route(b.dataset.go);
 };
 
 $('#plList').onclick = (e) => {
@@ -868,6 +972,12 @@ $('#sf').onsubmit = (e) => {
 // Один обработчик на всю страницу
 $('#content').addEventListener('click', (e) => {
   if (e.target.closest('[data-retry]')) return load(lastLoad);
+  const go = e.target.closest('[data-go]');
+  if (go) return route(go.dataset.go);
+  const plCard = e.target.closest('[data-pl]');
+  if (plCard) return showPlaylist(plCard.dataset.pl);
+  if (e.target.closest('[data-newpl]')) return openModal(null);
+  if (e.target.closest('[data-shuffle]')) return play(Math.floor(Math.random() * queue.length));
   if (e.target.closest('[data-cover]')) return $('#coverInput').click();
 
   const artist = e.target.closest('[data-artist]');
@@ -1083,6 +1193,23 @@ $('#coverInput').onchange = (e) => {
   img.src = url;
 };
 
+// ---------- Библиотека ----------
+function showLibrary() {
+  view = { type: 'library' };
+  setActive('library');
+  setPage(`
+    <div class="ph"><div>
+      <h2>Библиотека</h2>
+      <div class="sub">Плейлисты и избранное</div>
+      <div class="acts"><button class="btn" data-newpl>+ Новый плейлист</button></div>
+    </div></div>`);
+  const cards = [
+    `<button class="pcard" data-go="likes"><div class="pc-cover heart-card">${HEART_SVG}</div><div class="pc-name">Избранное</div><div class="pc-sub">${likes.length} треков</div></button>`,
+    ...playlists.map((p) => `<button class="pcard" data-pl="${esc(p.id)}"><div class="pc-cover" style="${bg(p.cover || p.tracks[0]?.cover)}"></div><div class="pc-name">${esc(p.name)}</div><div class="pc-sub">${p.tracks.length} треков</div></button>`),
+  ];
+  setBody(`<div class="pgrid">${cards.join('')}</div>`);
+}
+
 // ---------- Полноэкранный поиск ----------
 const sx = $('#sx');
 const sxInput = $('#sxInput');
@@ -1111,6 +1238,7 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSearc
 renderPlaylists();
 restoreState();
 showHome();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 </script>
 </body>
 </html>
