@@ -494,6 +494,16 @@
   .nr-cover{width:100%;aspect-ratio:1;border-radius:16px;background:var(--surface2) center/cover;box-shadow:0 20px 40px #0009}
   .nr-name{font-weight:700;margin-top:12px;font-size:15px}
   .nr-sub{color:var(--muted);font-size:13px;margin-top:4px}
+  .artist-release{margin:0 0 30px;max-width:720px}
+  .artist-release-card{display:flex;align-items:center;gap:18px;width:100%;padding:14px;text-align:left;border:1px solid #ffffff14;border-radius:20px;background:linear-gradient(115deg,#202020,#111);transition:transform .25s,border-color .25s;overflow:hidden}
+  .artist-release-card:hover{transform:translateY(-2px);border-color:#ffffff35}
+  .artist-release-cover{width:104px;height:104px;flex:none;border-radius:14px;background:var(--surface2) center/cover;box-shadow:0 10px 28px #0008}
+  .artist-release-info{min-width:0}
+  .artist-release-kicker{font-size:10px;font-weight:800;letter-spacing:.13em;color:#a7a7a7;margin-bottom:7px}
+  .artist-release-title{font-size:clamp(18px,3vw,25px);font-weight:850;letter-spacing:-.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .artist-release-sub{font-size:13px;color:var(--muted);margin-top:5px}
+  .artist-release-cta{display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:7px 12px;border-radius:999px;background:#ffffff12;font-size:12px;font-weight:750}
+  @media(max-width:600px){.artist-release-card{gap:12px;padding:11px}.artist-release-cover{width:82px;height:82px}.artist-release-kicker{font-size:9px}.artist-release-sub{font-size:12px}}
   .hrow{display:flex;gap:16px;overflow-x:auto;padding:4px 2px 16px;scroll-snap-type:x mandatory;scrollbar-width:none}
   .hrow::-webkit-scrollbar{display:none}
   .acard{flex:0 0 164px;scroll-snap-align:start;text-align:left;min-width:0;animation:rise .5s var(--ease) both;transition:transform .35s var(--ease)}
@@ -740,18 +750,17 @@ function row(t, i) {
 }
 
 let visibleN = 15;   // сколько треков показывать на странице артиста
-let homeExpanded = false;
 function renderTracks(tracks) {
   queue = tracks;
   if (!tracks.length) {
     setBody(`<p class="sub">${view.type === 'playlist' ? 'В плейлисте пока пусто. Добавляйте треки кнопкой «+».' : view.type === 'likes' ? 'Здесь появятся треки, которые вы лайкнули ♥' : 'Ничего не найдено'}</p>`);
     return;
   }
-  const limited = (view.type === 'artist' && tracks.length > visibleN) || (view.type === 'home' && tracks.length > 5 && !homeExpanded);
-  const shown = view.type === 'home' && !homeExpanded ? tracks.slice(0, 5) : (view.type === 'artist' && limited ? tracks.slice(0, visibleN) : tracks);
-  const more = view.type === 'home' && tracks.length > 5
-    ? `<div class="more"><button class="btn ghost" data-home-more>${homeExpanded ? '↑ Свернуть список' : `Показать остальные ${tracks.length - 5} треков ↓`}</button></div>`
-    : limited ? `<div class="more"><button class="btn ghost" data-more>Показать ещё ${Math.min(15, tracks.length - visibleN)}</button></div>` : '';
+  const limited = view.type === 'artist' && tracks.length > visibleN;
+  const shown = limited ? tracks.slice(0, visibleN) : tracks;
+  const more = limited
+    ? `<div class="more"><button class="btn ghost" data-more>Показать ещё ${Math.min(15, tracks.length - visibleN)}</button></div>`
+    : '';
   setBody(`<div class="list${view.type === 'trends' ? ' chart' : ''}">${shown.map(row).join('')}</div>${more}`);
   markPlaying();
 }
@@ -804,7 +813,6 @@ async function homeMix() {
 }
 
 function showHome() {
-  homeExpanded = false;
   view = { type: 'home' };
   setActive('home');
   setPage(`
@@ -814,8 +822,8 @@ function showHome() {
       <button class="btn" data-wave>${I_PLAY} Моя волна</button>
     </div>
     <div id="fpBox"></div>
-    <div class="section">Популярные треки</div>
-    <div class="sub" style="margin:-8px 0 14px">${likes.length ? 'Подборка по исполнителям, которых вы лайкнули' : 'Популярное сейчас'}</div>`);
+    <div class="section">Что послушать</div>
+    <div class="sub" style="margin:-8px 0 14px">${likes.length ? 'Подборка по исполнителям, которых вы лайкнули' : 'Подборка популярных треков'}</div>`);
   loadFeatured();
   setBody('<p class="sub">Подбираем треки…</p>');
   const my = loadId;
@@ -901,20 +909,17 @@ async function showArtist(id) {
           <div class="acts"><button class="btn" data-play-all>${I_PLAY} Слушать</button><button class="btn ghost" data-shuffle>Перемешать</button></div>
         </div>
       </div>
-      <div class="acols">
-        <section>
-          <div class="section">Популярные треки</div>
-          <div id="body"></div>
-        </section>
-        <div class="newrel-col">
-          ${newest ? `<div class="section">Новый релиз</div>
-          <button class="newrel" data-album="${esc(newest.id)}">
-            <div class="nr-cover" style="${bg(newest.cover)}"></div>
-            <div class="nr-name">${esc(newest.title)}</div>
-            <div class="nr-sub">${newest.year || ''}${newest.type ? ' · ' + esc(newest.type) : ''}</div>
-          </button>` : ''}
-        </div>
-      </div>
+      ${newest ? `<section class="artist-release">
+        <div class="section">Новый релиз</div>
+        <button class="artist-release-card" data-album="${esc(newest.id)}">
+          <div class="artist-release-cover" style="${bg(newest.cover)}"></div>
+          <div class="artist-release-info"><div class="artist-release-kicker">${esc(newest.type || 'НОВИНКА')} · ${newest.year || 'СВЕЖИЙ РЕЛИЗ'}</div>
+            <div class="artist-release-title">${esc(newest.title)}</div><div class="artist-release-sub">${esc(artist.name)} · слушать релиз</div>
+            <span class="artist-release-cta">${I_PLAY} Слушать</span></div>
+        </button>
+      </section>` : ''}
+      <div class="section">Популярные треки</div>
+      <div id="body"></div>
       ${albums.length ? `<div class="section">Альбомы</div><div class="hrow">${albums.map(albumCard).join('')}</div>` : ''}
       ${feats.length ? `<div class="section">Плейлисты</div><div class="hrow">${feats.map(fpCard).join('')}</div>` : ''}`);
     renderTracks(tracks || []);
@@ -1217,7 +1222,6 @@ $('#sf').onsubmit = (e) => {
 // Один обработчик на всю страницу
 $('#content').addEventListener('click', (e) => {
   if (e.target.closest('[data-retry]')) return load(lastLoad);
-  if (e.target.closest('[data-home-more]')) { homeExpanded = !homeExpanded; return renderTracks(queue); }
   if (e.target.closest('[data-more]')) { visibleN += 15; return renderTracks(queue); }
   const go = e.target.closest('[data-go]');
   if (go) return route(go.dataset.go);
@@ -1603,11 +1607,8 @@ async function loadFeatured() {
     const { playlists: list } = await api('/api/u/featured');
     const box = $('#fpBox');
     if (!box || view.type !== 'home' || !list.length) return;
-    const newest = list[0];
-    const rest = list.slice(1);
-    const release = `<div class="release-wrap"><div class="release-kicker">Новый релиз</div><button class="release-card" data-fp="${esc(newest.id)}"><div class="release-cover" style="${bg(newest.cover)}"></div><div><div class="release-tag">Wave · премьера</div><div class="release-name">${esc(newest.name)}</div><div class="release-sub">${esc(newest.category || 'Новая подборка')} · ${newest.count ?? '—'} треков</div><div class="release-cta">${I_PLAY} Слушать релиз</div></div></button></div>`;
-    const cats = [...new Set(rest.map((p) => p.category))];
-    box.innerHTML = release + cats.map((c) => `<div class="section">${esc(c)}</div><div class="pgrid">${rest.filter((p) => p.category === c).map((p) =>
+    const cats = [...new Set(list.map((p) => p.category))];
+    box.innerHTML = cats.map((c) => `<div class="section">${esc(c)}</div><div class="pgrid">${list.filter((p) => p.category === c).map((p) =>
       `<button class="pcard" data-fp="${esc(p.id)}"><div class="pc-cover" style="${bg(p.cover)}"></div><div class="pc-name">${esc(p.name)}</div><div class="pc-sub">${p.count} треков</div></button>`).join('')}</div>`).join('');
   } catch (_) { /* база может быть ещё не подключена: главная работает и без неё */ }
 }
