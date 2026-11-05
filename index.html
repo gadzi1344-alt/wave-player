@@ -486,6 +486,7 @@
   .ainfo{min-width:0}
   .aname{font-size:clamp(40px,5.5vw,72px);font-weight:900;letter-spacing:-2px;line-height:1;margin:6px 0 10px}
   .ainfo .acts{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+  .artist-monthly{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:8px 12px;border:1px solid #ffffff14;border-radius:999px;background:linear-gradient(110deg,#ffffff0c,#ffffff04);color:#cfcfcf;font-size:12px;font-weight:650}.artist-monthly .dot{width:6px;height:6px;border-radius:50%;background:#9ee6bd;box-shadow:0 0 10px #9ee6bd70}.artist-monthly b{color:#fff;font-variant-numeric:tabular-nums}
   .acols{display:grid;grid-template-columns:minmax(0,1fr);gap:40px;margin-bottom:10px}
   .newrel-col{width:min(320px,100%)}
   .more{display:flex;justify-content:center;margin:18px 0 4px}
@@ -896,6 +897,7 @@ async function showArtist(id) {
           <div class="kicker">Исполнитель</div>
           <h1 class="aname">${esc(artist.name)}</h1>
           <div class="sub">${(tracks || []).length} треков · ${albums.length} альбомов</div>
+          <div class="artist-monthly"><span class="dot"></span><b>${artistMonthlyCount(artist.id, artist.name).toLocaleString('ru-RU')}</b> прослушиваний за месяц <span style="color:#777;font-weight:500">· на этом устройстве</span></div>
           <div class="acts"><button class="btn" data-play-all>${I_PLAY} Слушать</button><button class="btn ghost" data-shuffle>Перемешать</button></div>
         </div>
       </div>
@@ -1012,12 +1014,35 @@ function restoreState() {
   } catch (e) { /* повреждённые данные игнорируем */ }
 }
 
+// Локальная статистика: число запусков треков артиста за текущий месяц на этом устройстве.
+function artistMonthlyKey() {
+  const d = new Date();
+  return `wave.artist.monthly.${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+function artistMonthlyStats() {
+  try { return JSON.parse(localStorage.getItem(artistMonthlyKey()) || '{}'); }
+  catch (_) { return {}; }
+}
+function countArtistPlay(track) {
+  const stats = artistMonthlyStats();
+  (Array.isArray(track.artists) ? track.artists : []).forEach((a) => {
+    const key = String(a.id || a.name || '').trim();
+    if (key) stats[key] = (Number(stats[key]) || 0) + 1;
+  });
+  try { localStorage.setItem(artistMonthlyKey(), JSON.stringify(stats)); } catch (_) {}
+}
+function artistMonthlyCount(id, name) {
+  const stats = artistMonthlyStats();
+  return Number(stats[String(id || name || '').trim()] || 0);
+}
+
 async function play(i, seek = 0, list = queue) {
   if (i < 0 || i >= list.length) return;
   const my = ++playToken;          // новый запрос отменяет все предыдущие
   audio.pause();                   // старый трек сразу останавливается
   playQueue = list;
   const t = list[i];
+  countArtistPlay(t);
   currentId = t.id;
   pendingSeek = seek;
   showNowTrack(t);
