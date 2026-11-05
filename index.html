@@ -19,7 +19,7 @@
   .app{flex:1;min-height:0;display:grid;grid-template-columns:240px 1fr}
 
   /* ---------- Sidebar ---------- */
-  aside{background:var(--side);border-right:1px solid var(--line);padding:26px 14px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+  aside{background:var(--side);border:1px solid var(--line);border-radius:22px;margin:12px 0 12px 12px;padding:26px 14px;overflow-y:auto;display:flex;flex-direction:column;gap:2px;box-shadow:0 20px 50px #0007}
   .brand{font-weight:800;font-size:19px;letter-spacing:-.4px;padding:2px 12px 26px}
   .nav button{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:10px;color:var(--muted);font-size:14px;font-weight:500;text-align:left;transition:background .25s var(--ease),color .25s}
   .nav button:hover{color:var(--txt);background:var(--surface)}
@@ -30,6 +30,11 @@
   .nav button.active::before{content:"";position:absolute;left:-14px;top:24%;bottom:24%;width:3px;border-radius:0 3px 3px 0;background:var(--txt)}
   .nav button svg{transition:transform .25s var(--ease)}
   .nav button:hover svg{transform:translateX(2px)}
+  .nav button{color:#c4c4c4}
+  .nav button svg{stroke-width:1.9;opacity:.9}
+  .nav button:hover{color:#fff}
+  .nav button.active{color:#fff}
+  .nav button.active svg{opacity:1}
   .label{display:flex;justify-content:space-between;align-items:center;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);padding:24px 12px 8px}
   .plus{width:24px;height:24px;border-radius:7px;color:var(--muted);font-size:18px;line-height:1;display:grid;place-items:center;transition:.2s}
   .plus:hover{color:var(--txt);background:var(--surface)}
@@ -191,7 +196,7 @@
   /* ---------- Mobile ---------- */
   @media (max-width:760px){
     .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
-    aside{flex-direction:row;overflow-x:auto;overflow-y:hidden;padding:10px 12px;border-right:0;border-bottom:1px solid var(--line);gap:6px;align-items:center}
+    aside{flex-direction:row;overflow-x:auto;overflow-y:hidden;padding:10px 12px;margin:0;border-radius:0;border:0;border-bottom:1px solid var(--line);box-shadow:none;gap:6px;align-items:center}
     .brand,.label{display:none}
     .nav{display:flex;gap:6px;margin:0}
     .nav button.active::before{display:none}
