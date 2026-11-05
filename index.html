@@ -539,6 +539,7 @@
       <button data-go="library">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Библиотека</span></button>
     </nav>
+    <div id="plList" hidden></div>
   </aside>
 
   <main>
@@ -622,6 +623,17 @@
   </form>
 </div>
 
+
+<div class="modal-bg" id="modal">
+  <form class="modal" id="modalForm">
+    <h3>Новый плейлист</h3>
+    <input id="plName" maxlength="40" placeholder="Название" autocomplete="off">
+    <div class="mbtns">
+      <button type="button" class="btn ghost" data-close>Отмена</button>
+      <button type="submit" class="btn">Создать</button>
+    </div>
+  </form>
+</div>
 
 <div class="toast" id="toast"></div>
 <nav class="tabbar" id="tabbar">
