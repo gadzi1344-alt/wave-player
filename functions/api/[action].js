@@ -34,7 +34,7 @@ export async function onRequestGet({ params, request, env }) {
     'User-Agent': 'Yandex-Music-API',
   };
   const sp = new URL(request.url).searchParams;
-  const get = async (path) => (await fetch(API + path, { headers })).json();
+  const get = async (path) => (await fetch(API + path, { headers, signal: AbortSignal.timeout(12000) })).json();
 
   try {
     // ---- Поиск треков ----
@@ -74,7 +74,7 @@ export async function onRequestGet({ params, request, env }) {
       const best = (d.result || []).sort((a, b) => b.bitrateInKbps - a.bitrateInKbps)[0];
       if (!best) return json({ error: 'Нет доступных файлов' }, 404);
 
-      const xml = await (await fetch(best.downloadInfoUrl)).text();
+      const xml = await (await fetch(best.downloadInfoUrl, { signal: AbortSignal.timeout(12000) })).text();
       const pick = (tag) => xml.match(new RegExp(`<${tag}>(.+?)</${tag}>`))?.[1];
       const host = pick('host');
       const path = pick('path');
@@ -87,7 +87,10 @@ export async function onRequestGet({ params, request, env }) {
 
     return json({ error: 'Не найдено' }, 404);
   } catch (e) {
-    return json({ error: String(e) }, 500);
+    const msg = e?.name === 'TimeoutError' || e?.name === 'AbortError'
+      ? 'Яндекс Музыка не ответила вовремя. Попробуйте ещё раз.'
+      : String(e);
+    return json({ error: msg }, 500);
   }
 }
 
