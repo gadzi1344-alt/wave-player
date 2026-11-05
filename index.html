@@ -397,6 +397,11 @@
     .btns .main{width:44px;height:44px;background:var(--txt);color:#000}
     .btns .main svg{width:17px;height:17px}
   }
+  /* ---------- Телефон: плеер у самого низа, вкладки над ним ---------- */
+  @media (max-width:760px){
+    .player{bottom:calc(env(safe-area-inset-bottom,0px) + 10px) !important;height:64px !important;left:10px !important;right:10px !important}
+    .tabbar{left:10px !important;right:10px !important;bottom:calc(env(safe-area-inset-bottom,0px) + 82px) !important;height:64px !important;padding:4px 6px !important;border:1px solid #2a2a2a !important;border-radius:20px;background:#0e0e0ef5 !important;box-shadow:0 18px 40px #000a}
+  }
 </style>
 </head>
 <body>
