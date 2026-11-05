@@ -65,6 +65,10 @@
   @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
   .section{font-size:16px;font-weight:700;margin:4px 0 14px;letter-spacing:-.2px}
   .sub{color:var(--muted);font-size:13px}
+  .chips{display:flex;gap:8px;margin-top:16px}
+  .chip{padding:7px 15px;border-radius:999px;background:var(--surface);color:var(--muted);font-size:13px;transition:background .2s,color .2s}
+  .chip:hover{color:var(--txt)}
+  .chip.on{background:var(--txt);color:#000}
 
   /* ---------- Track rows ---------- */
   .list{display:flex;flex-direction:column;gap:2px}
@@ -157,6 +161,37 @@
     .act button{opacity:1}
     .ph{flex-direction:column;align-items:flex-start}
   }
+  /* ---------- Полноэкранный плеер ---------- */
+  .mini,.np{cursor:pointer}
+  .mini{transition:transform .3s var(--ease)}
+  .mini:hover{transform:scale(1.05)}
+
+  .full{position:fixed;inset:0;z-index:25;display:flex;align-items:center;justify-content:center;padding:40px 24px;overflow:hidden;background:var(--bg);opacity:0;pointer-events:none;transition:opacity .45s var(--ease)}
+  .full.open{opacity:1;pointer-events:auto}
+  .full .bgimg{position:absolute;inset:-12%;background:center/cover;filter:blur(90px) brightness(.4) saturate(1.2);transform:scale(1.1);transition:background-image .6s}
+  .full .close{position:absolute;top:22px;left:24px;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--txt);background:#ffffff14;transition:background .2s,transform .25s var(--ease)}
+  .full .close:hover{background:#ffffff26;transform:scale(1.06)}
+  .full .close svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .full .inner{position:relative;width:min(440px,100%);display:flex;flex-direction:column;align-items:center;gap:28px;transform:translateY(40px) scale(.97);opacity:0;transition:transform .6s var(--ease),opacity .5s var(--ease)}
+  .full.open .inner{transform:none;opacity:1}
+  .full .big{width:min(380px,62vh,80vw);height:min(380px,62vh,80vw);border-radius:22px;background:var(--surface2) center/cover;box-shadow:0 40px 90px #000d;transition:transform .6s var(--ease);animation:bigIn .8s var(--ease) backwards}
+  .full.paused .big{transform:scale(.92)}
+  @keyframes bigIn{from{opacity:0;transform:scale(.82) translateY(20px)}to{opacity:1;transform:none}}
+  .full .ti{text-align:center;min-height:56px}
+  .full .ti h3{font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1.2}
+  .full .ti p{color:var(--muted);margin-top:8px;font-size:15px}
+  .full .ctrl{width:100%}
+  .full .btns{gap:34px}
+  .full .btns button{width:48px;height:48px}
+  .full .btns button svg{width:24px;height:24px}
+  .full .btns .main{width:70px;height:70px}
+  .full .btns .main svg{width:28px;height:28px}
+  .full .bar{font-size:12px}
+
+  @media (max-width:760px){
+    .full .btns{gap:22px}
+    .full .btns .main{width:60px;height:60px}
+  }
 </style>
 </head>
 <body>
@@ -231,6 +266,32 @@
   </form>
 </div>
 
+<div class="full" id="full">
+  <div class="bgimg" id="fBg"></div>
+  <button class="close" id="fClose" title="Свернуть">
+    <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+  <div class="inner">
+    <div class="big" id="fCover"></div>
+    <div class="ti">
+      <h3 id="fTitle"></h3>
+      <p id="fArtist"></p>
+    </div>
+    <div class="ctrl">
+      <div class="btns">
+        <button id="fPrev" title="Назад"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zM20 6v12L9 12z"/></svg></button>
+        <button class="main" id="fToggle" title="Играть"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+        <button id="fNext" title="Вперед"><svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM4 6v12l11-6z"/></svg></button>
+      </div>
+      <div class="bar">
+        <span id="fCur">0:00</span>
+        <input type="range" id="fSeek" min="0" max="100" step="0.1" value="0">
+        <span id="fDur">0:00</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <audio id="audio" preload="none"></audio>
 
@@ -246,6 +307,7 @@ const I_PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
 let queue = [];            // треки открытой страницы
 let currentId = null;      // id играющего трека
 let view = { type: 'home' };
+let chartOpt = 'russia';
 let playlists = JSON.parse(localStorage.getItem('wave.playlists') || '[]');
 
 const savePlaylists = () => localStorage.setItem('wave.playlists', JSON.stringify(playlists));
@@ -599,10 +661,13 @@ $('#sf').onsubmit = (e) => {
   if (q) showSearch(q);
 };
 
-// Один обработчик на всю страницу: артисты, строки, кнопки
+// Один обработчик на всю страницу: артисты, чарты, строки, кнопки
 $('#content').addEventListener('click', (e) => {
   const artist = e.target.closest('[data-artist]');
   if (artist) { e.stopPropagation(); return showArtist(artist.dataset.artist); }
+
+  const chart = e.target.closest('[data-chart]');
+  if (chart) { chartOpt = chart.dataset.chart; return showTrends(); }
 
   const row = e.target.closest('.row');
   const act = e.target.closest('[data-act]');
@@ -618,6 +683,51 @@ $('#content').addEventListener('click', (e) => {
   if (e.target.closest('[data-del]')) return deletePlaylist();
   if (e.target.closest('[data-wave]')) return showWave();
 });
+
+// ---------- Полноэкранный плеер ----------
+const fEl = $('#full');
+
+// Копирует состояние из нижней панели и аудио в полноэкранный вид
+function syncFull() {
+  const cs = $('#nowCover').style.backgroundImage;
+  $('#fCover').style.backgroundImage = cs;
+  $('#fBg').style.backgroundImage = cs;
+  $('#fTitle').textContent = $('#nowTitle').textContent;
+  $('#fArtist').textContent = $('#nowArtist').textContent;
+  $('#fToggle').innerHTML = audio.paused ? I_PLAY : I_PAUSE;
+  fEl.classList.toggle('paused', audio.paused);
+  const p = (audio.currentTime / audio.duration) * 100 || 0;
+  $('#fSeek').value = p;
+  $('#fSeek').style.setProperty('--p', p + '%');
+  $('#fCur').textContent = fmt(audio.currentTime);
+  $('#fDur').textContent = fmt(audio.duration);
+}
+['loadstart', 'play', 'pause', 'timeupdate', 'loadedmetadata', 'ended'].forEach((ev) =>
+  audio.addEventListener(ev, syncFull));
+
+function openFull() {
+  if (!currentId) return toast('Сначала выберите трек');
+  syncFull();
+  const big = $('#fCover');
+  big.style.animation = 'none';
+  void big.offsetWidth;
+  big.style.animation = '';
+  fEl.classList.add('open');
+}
+function closeFull() {
+  fEl.classList.remove('open');
+}
+
+$('#nowCover').onclick = openFull;
+$('.np').onclick = openFull;
+$('#fClose').onclick = closeFull;
+$('#fToggle').onclick = () => $('#toggle').click();
+$('#fPrev').onclick = () => $('#prev').click();
+$('#fNext').onclick = () => $('#next').click();
+$('#fSeek').oninput = (e) => {
+  if (isFinite(audio.duration)) audio.currentTime = (e.target.value / 100) * audio.duration;
+};
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeFull(); });
 
 // ---------- Старт (без автовоспроизведения) ----------
 renderPlaylists();
