@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Wave — музыкальный плеер</title>
+<style>
+  :root{
+    --bg:#08080c; --panel:#101016; --card:#16161e; --line:#22222c;
+    --txt:#f4f4f7; --muted:#8a8a99;
+    --acc:#ffdb4d; --pink:#ff3d8b; --violet:#7b5cff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;height:100vh;overflow:hidden}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+  .app{display:grid;grid-template-columns:230px 1fr;height:calc(100vh - 88px)}
+
+  /* ---------- Sidebar ---------- */
+  aside{background:var(--panel);padding:26px 16px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+  .logo{font-size:24px;font-weight:900;letter-spacing:-.5px;color:var(--acc);margin:0 10px 26px;display:flex;align-items:center;gap:8px}
+  .logo i{width:12px;height:12px;border-radius:50%;background:var(--acc);box-shadow:0 0 18px var(--acc)}
+  .nav button{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border-radius:12px;color:var(--muted);font-weight:600;transition:.2s}
+  .nav button:hover{color:var(--txt);background:#ffffff0a}
+  .nav button.active{color:var(--txt);background:#ffffff12}
+  .nav svg{width:18px;height:18px;flex:none}
+
+  /* ---------- Main ---------- */
+  main{overflow-y:auto;padding:32px 40px 40px;position:relative;
+    background:
+      radial-gradient(900px 480px at 85% -10%,#ff3d8b33,transparent 60%),
+      radial-gradient(800px 500px at -5% 0%,#7b5cff26,transparent 60%),
+      var(--bg)}
+  .top{display:flex;gap:16px;align-items:center;margin-bottom:28px}
+  .search{flex:1;max-width:520px;position:relative}
+  .search input{width:100%;padding:14px 18px 14px 46px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--txt);font-size:15px;outline:none;transition:.2s}
+  .search input:focus{border-color:var(--violet);box-shadow:0 0 0 4px #7b5cff22}
+  .search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;color:var(--muted)}
+
+  /* ---------- Hero "Моя волна" ---------- */
+  .hero{position:relative;overflow:hidden;border-radius:28px;padding:44px 40px;min-height:240px;display:flex;flex-direction:column;justify-content:flex-end;margin-bottom:34px;background:#0d0d14;border:1px solid var(--line)}
+  .blob{position:absolute;inset:-20%;filter:blur(60px);opacity:.9;animation:drift 14s ease-in-out infinite alternate}
+  .blob.b1{background:radial-gradient(circle at 30% 40%,var(--pink),transparent 45%)}
+  .blob.b2{background:radial-gradient(circle at 70% 60%,var(--acc),transparent 40%);animation-delay:-5s}
+  .blob.b3{background:radial-gradient(circle at 50% 80%,var(--violet),transparent 45%);animation-delay:-9s}
+  @keyframes drift{from{transform:translate(-4%,-3%) scale(1)}to{transform:translate(4%,3%) scale(1.08)}}
+  .hero *{position:relative}
+  .hero h1{font-size:clamp(40px,6vw,76px);font-weight:900;letter-spacing:-2px;line-height:1}
+  .hero p{color:#ffffffb3;margin:12px 0 22px;font-size:16px}
+  .btn-play{display:inline-flex;align-items:center;gap:10px;background:var(--acc);color:#000;font-weight:800;padding:14px 26px;border-radius:999px;width:fit-content;box-shadow:0 10px 30px #ffdb4d44;transition:.2s}
+  .btn-play:hover{transform:scale(1.04)}
+
+  h2{font-size:22px;font-weight:800;margin:0 0 16px;letter-spacing:-.3px}
+  .status{color:var(--muted);margin:0 0 14px;font-size:14px}
+
+  /* ---------- Track list ---------- */
+  .list{display:flex;flex-direction:column;gap:4px}
+  .row{display:grid;grid-template-columns:52px 1fr auto;gap:16px;align-items:center;padding:8px 14px 8px 8px;border-radius:14px;cursor:pointer;transition:.2s;position:relative}
+  .row:hover{background:var(--card)}
+  .row.playing{background:linear-gradient(90deg,#ff3d8b22,transparent 70%)}
+  .cover{width:52px;height:52px;border-radius:10px;background:var(--card) center/cover;position:relative;overflow:hidden}
+  .row:hover .cover::after,.row.playing .cover::after{content:"";position:absolute;inset:0;background:#0008 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/22px no-repeat}
+  .meta{min-width:0}
+  .t{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .a{color:var(--muted);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+  .d{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+
+  /* ---------- Player bar ---------- */
+  .player{position:fixed;left:0;right:0;bottom:0;height:88px;background:#0c0c12ee;backdrop-filter:blur(18px);border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 2fr 1fr;align-items:center;gap:20px;padding:0 24px;padding-bottom:env(safe-area-inset-bottom,0)}
+  .now{display:flex;gap:12px;align-items:center;min-width:0}
+  .now .cover{width:52px;height:52px}
+  .now .t,.now .a{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .controls{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .btns{display:flex;gap:22px;align-items:center}
+  .btns button{color:var(--muted);transition:.2s;font-size:18px}
+  .btns button:hover{color:var(--txt)}
+  .btns .main{width:46px;height:46px;border-radius:50%;background:var(--acc);color:#000;display:grid;place-items:center;font-size:16px;box-shadow:0 6px 20px #ffdb4d55}
+  .btns .main:hover{color:#000;transform:scale(1.06)}
+  .progress{display:flex;align-items:center;gap:10px;width:100%;max-width:560px;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+  input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--pink),var(--acc)) 0/var(--p,0%) 100% no-repeat #2a2a35;outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#fff}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:0;border-radius:50%;background:#fff}
+  .vol{display:flex;justify-content:flex-end;align-items:center;gap:10px;color:var(--muted)}
+  .vol input{max-width:120px}
+
+  .toast{position:fixed;top:20px;right:20px;background:var(--card);border:1px solid var(--line);padding:12px 16px;border-radius:12px;color:#ffb3c9;font-size:14px;max-width:360px;display:none;z-index:9}
+
+  @media (max-width:760px){
+    .app{grid-template-columns:1fr;height:calc(100vh - 150px)}
+    aside{display:none}
+    main{padding:20px 16px}
+    .player{grid-template-columns:1fr auto;height:auto;padding:12px 14px;gap:10px}
+    .vol{display:none}
+    .controls{grid-column:1/-1;order:3}
+    .now{min-width:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside>
+    <div class="logo"><i></i>Wave</div>
+    <nav class="nav">
+      <button class="active" data-go="wave">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg>Моя волна</button>
+      <button data-go="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Поиск</button>
+      <button data-go="trends">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>Тренды</button>
+      <button data-go="mood" data-q="lofi chill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14c0-4 4-8 8-8s8 4 8 8"/><path d="M4 14h16v4H4z"/></svg>Для учебы</button>
+      <button data-go="mood" data-q="workout драйв">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 12h12M4 9v6M20 9v6M2 11v2M22 11v2"/></svg>Тренировка</button>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="top">
+      <form class="search" id="searchForm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <input id="q" type="search" placeholder="Исполнители, треки, альбомы" autocomplete="off">
+      </form>
+    </div>
+
+    <section class="hero" id="hero">
+      <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+      <h1>Моя волна</h1>
+      <p>Музыка, которая подстраивается под ваш вкус</p>
+      <button class="btn-play" id="wavePlay">▶ Запустить</button>
+    </section>
+
+    <h2 id="sectionTitle">Рекомендации</h2>
+    <p class="status" id="status"></p>
+    <div class="list" id="list"></div>
+  </main>
+</div>
+
+<div class="player">
+  <div class="now">
+    <div class="cover" id="nowCover"></div>
+    <div style="min-width:0">
+      <div class="t" id="nowTitle">Ничего не играет</div>
+      <div class="a" id="nowArtist">Выберите трек</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="btns">
+      <button id="prev" title="Назад">⏮</button>
+      <button class="main" id="toggle" title="Играть">▶</button>
+      <button id="next" title="Вперед">⏭</button>
+    </div>
+    <div class="progress">
+      <span id="cur">0:00</span>
+      <input type="range" id="seek" min="0" max="100" value="0" step="0.1">
+      <span id="dur">0:00</span>
+    </div>
+  </div>
+
+  <div class="vol">
+    🔊 <input type="range" id="vol" min="0" max="1" step="0.01" value="0.8">
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<audio id="audio" preload="none"></audio>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const audio = $('#audio');
+let queue = [];
+let idx = -1;
+
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = (sec) => {
+  if (!isFinite(sec)) return '0:00';
+  const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+  return `${m}:${String(s).padStart(2, '0')}`;
+};
+const toast = (msg) => {
+  const t = $('#toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.style.display = 'none', 4000);
+};
+
+async function api(path) {
+  const r = await fetch(path);
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || `Ошибка ${r.status}`);
+  return data;
+}
+
+function setStatus(text) { $('#status').textContent = text; }
+
+function renderList(tracks) {
+  queue = tracks;
+  if (!tracks.length) { $('#list').innerHTML = ''; setStatus('Ничего не найдено'); return; }
+  setStatus(`Найдено треков: ${tracks.length}`);
+  $('#list').innerHTML = tracks.map((t, i) => `
+    <div class="row" data-i="${i}">
+      <div class="cover" style="background-image:url('${esc(t.cover)}')"></div>
+      <div class="meta">
+        <div class="t">${esc(t.title)}</div>
+        <div class="a">${esc(t.artists)}</div>
+      </div>
+      <div class="d">${fmt(t.duration / 1000)}</div>
+    </div>`).join('');
+  highlight();
+}
+
+function highlight() {
+  document.querySelectorAll('.row').forEach((r) =>
+    r.classList.toggle('playing', Number(r.dataset.i) === idx));
+}
+
+async function search(q) {
+  if (!q.trim()) return;
+  setStatus('Ищем…');
+  $('#list').innerHTML = '';
+  try {
+    const { tracks } = await api('/api/search?q=' + encodeURIComponent(q));
+    $('#sectionTitle').textContent = `Результаты: «${q}»`;
+    renderList(tracks);
+  } catch (e) {
+    setStatus(''); toast(e.message);
+  }
+}
+
+async function play(i) {
+  if (i < 0 || i >= queue.length) return;
+  idx = i;
+  const t = queue[i];
+  updateNow(t);
+  highlight();
+  try {
+    const { url } = await api('/api/stream?id=' + encodeURIComponent(t.id));
+    audio.src = url;
+    await audio.play();
+  } catch (e) {
+    toast('Не удалось воспроизвести: ' + e.message);
+  }
+}
+
+function updateNow(t) {
+  $('#nowTitle').textContent = t.title;
+  $('#nowArtist').textContent = t.artists;
+  $('#nowCover').style.backgroundImage = t.cover ? `url('${t.cover}')` : '';
+}
+
+// ---- Управление ----
+$('#toggle').onclick = () => {
+  if (!audio.src) return idx < 0 ? play(0) : null;
+  audio.paused ? audio.play() : audio.pause();
+};
+$('#next').onclick = () => play((idx + 1) % queue.length);
+$('#prev').onclick = () => play(idx <= 0 ? queue.length - 1 : idx - 1);
+audio.onended = () => $('#next').onclick();
+audio.onplay = () => $('#toggle').textContent = '❚❚';
+audio.onpause = () => $('#toggle').textContent = '▶';
+
+audio.ontimeupdate = () => {
+  const p = (audio.currentTime / audio.duration) * 100 || 0;
+  $('#seek').value = p;
+  $('#seek').style.setProperty('--p', p + '%');
+  $('#cur').textContent = fmt(audio.currentTime);
+  $('#dur').textContent = fmt(audio.duration);
+};
+$('#seek').oninput = (e) => {
+  if (isFinite(audio.duration)) audio.currentTime = (e.target.value / 100) * audio.duration;
+};
+$('#vol').oninput = (e) => audio.volume = e.target.value;
+audio.volume = 0.8;
+
+$('#list').onclick = (e) => {
+  const row = e.target.closest('.row');
+  if (row) play(Number(row.dataset.i));
+};
+
+$('#searchForm').onsubmit = (e) => {
+  e.preventDefault();
+  $('#sectionTitle').textContent = 'Поиск';
+  search($('#q').value);
+};
+
+// ---- Навигация ----
+document.querySelectorAll('.nav button').forEach((btn) => {
+  btn.onclick = () => {
+    document.querySelectorAll('.nav button').forEach((b) => b.classList.toggle('active', b === btn));
+    const go = btn.dataset.go;
+    if (go === 'wave') return startWave();
+    if (go === 'search') { $('#q').focus(); return; }
+    if (go === 'trends') { $('#sectionTitle').textContent = 'Тренды'; return search('топ хиты 2026'); }
+    if (go === 'mood') { $('#sectionTitle').textContent = btn.textContent.trim(); return search(btn.dataset.q); }
+  };
+});
+
+const WAVE_QUERIES = ['synthwave', 'lofi hip hop', 'dark electronic', 'phonk', 'indie pop', 'deep house'];
+function startWave() {
+  $('#sectionTitle').textContent = 'Моя волна';
+  const q = WAVE_QUERIES[Math.floor(Math.random() * WAVE_QUERIES.length)];
+  search(q).then(() => play(0));
+}
+$('#wavePlay').onclick = startWave;
+
+// Стартовая подборка
+search('лучшее');
+</script>
+</body>
+</html>
