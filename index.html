@@ -65,10 +65,6 @@
   @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
   .section{font-size:16px;font-weight:700;margin:4px 0 14px;letter-spacing:-.2px}
   .sub{color:var(--muted);font-size:13px}
-  .chips{display:flex;gap:8px;margin-top:16px}
-  .chip{padding:7px 15px;border-radius:999px;background:var(--surface);color:var(--muted);font-size:13px;transition:background .2s,color .2s}
-  .chip:hover{color:var(--txt)}
-  .chip.on{background:var(--txt);color:#000}
 
   /* ---------- Track rows ---------- */
   .list{display:flex;flex-direction:column;gap:2px}
@@ -250,7 +246,6 @@ const I_PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
 let queue = [];            // треки открытой страницы
 let currentId = null;      // id играющего трека
 let view = { type: 'home' };
-let chartOpt = 'russia';
 let playlists = JSON.parse(localStorage.getItem('wave.playlists') || '[]');
 
 const savePlaylists = () => localStorage.setItem('wave.playlists', JSON.stringify(playlists));
@@ -370,13 +365,10 @@ function showTrends() {
   setActive('trends');
   setPage(`
     <div class="ph"><div>
-      <h2>Топ-чарты</h2>
-      <div class="chips">
-        <button class="chip ${chartOpt === 'russia' ? 'on' : ''}" data-chart="russia">Россия</button>
-        <button class="chip ${chartOpt === 'world' ? 'on' : ''}" data-chart="world">Мир</button>
-      </div>
+      <h2>Топ-чарт</h2>
+      <div class="sub">Россия</div>
     </div></div>`);
-  load('/api/chart?option=' + enc(chartOpt));
+  load('/api/chart?option=russia');
 }
 
 async function showArtist(id) {
@@ -607,13 +599,10 @@ $('#sf').onsubmit = (e) => {
   if (q) showSearch(q);
 };
 
-// Один обработчик на всю страницу: артисты, чарты, строки, кнопки
+// Один обработчик на всю страницу: артисты, строки, кнопки
 $('#content').addEventListener('click', (e) => {
   const artist = e.target.closest('[data-artist]');
   if (artist) { e.stopPropagation(); return showArtist(artist.dataset.artist); }
-
-  const chart = e.target.closest('[data-chart]');
-  if (chart) { chartOpt = chart.dataset.chart; return showTrends(); }
 
   const row = e.target.closest('.row');
   const act = e.target.closest('[data-act]');
