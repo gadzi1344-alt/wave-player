@@ -749,7 +749,7 @@ function row(t, i) {
     </div>`;
 }
 
-let visibleN = 15;   // сколько треков показывать на странице артиста
+let visibleN = 6;   // первые 6 популярных треков на странице артиста
 function renderTracks(tracks) {
   queue = tracks;
   if (!tracks.length) {
@@ -759,7 +759,7 @@ function renderTracks(tracks) {
   const limited = view.type === 'artist' && tracks.length > visibleN;
   const shown = limited ? tracks.slice(0, visibleN) : tracks;
   const more = limited
-    ? `<div class="more"><button class="btn ghost" data-more>Показать ещё ${Math.min(15, tracks.length - visibleN)}</button></div>`
+    ? `<div class="more"><button class="btn ghost" data-more>Показать остальные · ${tracks.length - visibleN}</button></div>`
     : '';
   setBody(`<div class="list${view.type === 'trends' ? ' chart' : ''}">${shown.map(row).join('')}</div>${more}`);
   markPlaying();
@@ -888,7 +888,7 @@ async function featuredWithArtist(aid) {
 
 async function showArtist(id) {
   view = { type: 'artist' };
-  visibleN = 15;
+  visibleN = 6;
   setActive(null);
   setPageRaw('<p class="sub" style="margin-top:8px">Загрузка…</p>');
   const my = loadId;
@@ -1222,7 +1222,7 @@ $('#sf').onsubmit = (e) => {
 // Один обработчик на всю страницу
 $('#content').addEventListener('click', (e) => {
   if (e.target.closest('[data-retry]')) return load(lastLoad);
-  if (e.target.closest('[data-more]')) { visibleN += 15; return renderTracks(queue); }
+  if (e.target.closest('[data-more]')) { visibleN = queue.length; return renderTracks(queue); }
   const go = e.target.closest('[data-go]');
   if (go) return route(go.dataset.go);
   const fpc = e.target.closest('[data-fp]');
