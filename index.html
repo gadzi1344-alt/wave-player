@@ -99,7 +99,7 @@
 
   /* ---------- Track rows ---------- */
   .list{display:flex;flex-direction:column;gap:2px}
-  .row{position:relative;display:grid;grid-template-columns:44px 1fr auto 30px;gap:14px;align-items:center;padding:7px 10px;border-radius:10px;cursor:pointer;transition:background .2s var(--ease);animation:rise .5s var(--ease) both}
+  .row{position:relative;display:grid;grid-template-columns:44px 1fr auto 66px;gap:14px;align-items:center;padding:7px 10px;border-radius:10px;cursor:pointer;transition:background .2s var(--ease);animation:rise .5s var(--ease) both}
   @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   .row:hover{background:var(--surface)}
   .thumb{position:relative;width:44px;height:44px;border-radius:8px;background:var(--surface2) center/cover;overflow:hidden;flex:none}
@@ -169,8 +169,33 @@
 
   .toast{position:fixed;top:18px;right:18px;z-index:40;max-width:340px;background:var(--surface2);border:1px solid #2a2a2a;padding:12px 16px;border-radius:12px;font-size:13px;color:#e6e6e6;box-shadow:0 12px 30px #0008;display:none;animation:pop .3s var(--ease) both}
 
+  /* ---------- Плейлисты и избранное внутри капсулы ---------- */
+  .pl-wrap{overflow:hidden;max-height:0;opacity:0;transition:max-height .5s var(--ease),opacity .3s}
+  aside:hover .pl-wrap{max-height:560px;opacity:1;transition-delay:.12s}
+  .pl-wrap .label{padding:18px 12px 8px}
+  #content,#body,.list{width:100%}
+
+  /* ---------- Лайки ---------- */
+  .act{display:flex;gap:2px;justify-content:flex-end;align-items:center}
+  .act svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;pointer-events:none}
+  .act .like.on{opacity:1;color:#f25f7a}
+  .act .like.on svg{fill:currentColor}
+  .full .like{margin-top:14px;width:46px;height:46px;border-radius:50%;background:#ffffff14;display:inline-grid;place-items:center;color:var(--txt);transition:background .2s,transform .25s var(--ease)}
+  .full .like:hover{background:#ffffff26;transform:scale(1.06)}
+  .full .like svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
+  .full .like.on{color:#f25f7a}
+  .full .like.on svg{fill:currentColor}
+
+  /* ---------- Обложка плейлиста ---------- */
+  .ph .cover{position:relative;overflow:hidden;cursor:pointer}
+  .ph .cover::after{content:"Изменить фото";position:absolute;left:0;right:0;bottom:0;padding:9px;text-align:center;font-size:12px;font-weight:600;color:#fff;background:#000b;opacity:0;transition:opacity .25s}
+  .ph .cover:hover::after{opacity:1}
+  .ph .cover.heart{display:grid;place-items:center;cursor:default;background:linear-gradient(135deg,#2b1a20,#121212)}
+  .ph .cover.heart::after{display:none}
+  .ph .cover.heart svg{width:64px;height:64px;fill:#f25f7a}
+
   /* ---------- Номера в чартах ---------- */
-  .list.chart .row{grid-template-columns:34px 44px 1fr auto 30px}
+  .list.chart .row{grid-template-columns:34px 44px 1fr auto 66px}
   .rank{font-size:18px;font-weight:800;color:var(--dim);text-align:center;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
   .rank.top{color:#fff;font-size:22px}
 
@@ -229,6 +254,7 @@
     .nav button{width:auto;white-space:nowrap}
     #plList{display:flex;gap:6px}
     #plList button{width:auto;white-space:nowrap}
+    .pl-wrap{max-height:none;opacity:1;overflow:visible;display:flex;gap:6px;align-items:center}
     main{grid-column:1;padding:20px 16px 30px}
     .player{grid-template-columns:1fr;height:auto;padding:12px 16px;gap:10px}
     .np{order:1}
@@ -257,12 +283,13 @@
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Поиск</span></button>
       <button data-go="trends">
         <svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><span>Тренды</span></button>
+      <button data-go="likes">
+        <svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-9.6-9.2C.9 8.2 2.8 4.5 6.6 4.5c2.3 0 3.8 1.3 5.4 3.1 1.6-1.8 3.1-3.1 5.4-3.1 3.8 0 5.7 3.7 4.2 6.8-2.1 4.6-9.6 9.2-9.6 9.2z"/></svg><span>Избранное</span></button>
+      <div class="pl-wrap">
+        <div class="label"><span>Плейлисты</span><button class="plus" id="newPl" title="Новый плейлист">+</button></div>
+        <div id="plList"></div>
+      </div>
     </nav>
-
-    <div class="label">Плейлисты
-      <button class="plus" id="newPl" title="Новый плейлист">+</button>
-    </div>
-    <div id="plList"></div>
   </aside>
 
   <main>
@@ -317,6 +344,7 @@
     <div class="ti">
       <h3 id="fTitle"></h3>
       <p id="fArtist"></p>
+      <button class="like" id="fLike" title="Нравится"><svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-9.6-9.2C.9 8.2 2.8 4.5 6.6 4.5c2.3 0 3.8 1.3 5.4 3.1 1.6-1.8 3.1-3.1 5.4-3.1 3.8 0 5.7 3.7 4.2 6.8-2.1 4.6-9.6 9.2-9.6 9.2z"/></svg></button>
     </div>
     <div class="ctrl">
       <div class="btns">
@@ -345,6 +373,7 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<input type="file" id="coverInput" accept="image/*" hidden>
 <audio id="audio" preload="none"></audio>
 
 <script>
@@ -355,6 +384,7 @@ audio.volume = 0.8;
 
 const I_PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
 const I_PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
+const HEART_SVG = '<svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-9.6-9.2C.9 8.2 2.8 4.5 6.6 4.5c2.3 0 3.8 1.3 5.4 3.1 1.6-1.8 3.1-3.1 5.4-3.1 3.8 0 5.7 3.7 4.2 6.8-2.1 4.6-9.6 9.2-9.6 9.2z"/></svg>';
 
 let queue = [];         // треки открытой страницы
 let playQueue = [];     // очередь текущего воспроизведения
@@ -366,8 +396,13 @@ let playToken = 0;      // защита от гонки запросов пот�
 let lastLoad = null;    // последний путь загрузки (для кнопки «Повторить»)
 let view = { type: 'home' };
 let playlists = JSON.parse(localStorage.getItem('wave.playlists') || '[]');
+let likes = JSON.parse(localStorage.getItem('wave.likes') || '[]');
 
-const savePlaylists = () => localStorage.setItem('wave.playlists', JSON.stringify(playlists));
+function savePlaylists() {
+  try { localStorage.setItem('wave.playlists', JSON.stringify(playlists)); }
+  catch (e) { toast('Не хватает места в хранилище. Удалите фото у некоторых плейлистов.'); }
+}
+const saveLikes = () => localStorage.setItem('wave.likes', JSON.stringify(likes));
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const enc = encodeURIComponent;
 const fmt = (sec) => (!isFinite(sec) || sec < 0) ? '0:00' : `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
@@ -418,7 +453,10 @@ function artistLinks(t) {
 }
 
 function row(t, i) {
-  const isPl = view.type === 'playlist';
+  const liked = isLiked(t.id);
+  const extra = view.type === 'playlist'
+    ? '<button data-act="remove" title="Убрать из плейлиста">×</button>'
+    : view.type === 'likes' ? '' : '<button data-act="add" title="Добавить в плейлист">+</button>';
   return `
     <div class="row" data-i="${i}" data-id="${esc(t.id)}" style="animation-delay:${Math.min(i, 25) * 25}ms">${view.type === 'trends' ? `<div class="rank${i < 3 ? ' top' : ''}">${String(i + 1).padStart(2, '0')}</div>` : ''}
       <div class="thumb" style="${bg(t.cover)}">
@@ -430,14 +468,14 @@ function row(t, i) {
         <div class="a">${artistLinks(t)}</div>
       </div>
       <div class="dur">${fmt(t.duration / 1000)}</div>
-      <div class="act"><button data-act="${isPl ? 'remove' : 'add'}" title="${isPl ? 'Убрать из плейлиста' : 'Добавить в плейлист'}">${isPl ? '×' : '+'}</button></div>
+      <div class="act"><button class="like${liked ? ' on' : ''}" data-act="like" title="Нравится">${HEART_SVG}</button>${extra}</div>
     </div>`;
 }
 
 function renderTracks(tracks) {
   queue = tracks;
   if (!tracks.length) {
-    setBody(`<p class="sub">${view.type === 'playlist' ? 'В плейлисте пока пусто. Добавляйте треки кнопкой «+».' : 'Ничего не найдено'}</p>`);
+    setBody(`<p class="sub">${view.type === 'playlist' ? 'В плейлисте пока пусто. Добавляйте треки кнопкой «+».' : view.type === 'likes' ? 'Здесь появятся треки, которые вы лайкнули ♥' : 'Ничего не найдено'}</p>`);
     return;
   }
   setBody(`<div class="list${view.type === 'trends' ? ' chart' : ''}">${tracks.map(row).join('')}</div>`);
@@ -540,7 +578,7 @@ function showPlaylist(id) {
   setActive('pl:' + id);
   setPage(`
     <div class="ph">
-      <div class="cover" style="${bg(pl.tracks[0]?.cover)}"></div>
+      <div class="cover" data-cover title="Изменить фото" style="${bg(pl.cover || pl.tracks[0]?.cover)}"></div>
       <div>
         <div class="kicker">Плейлист</div>
         <h2>${esc(pl.name)}</h2>
@@ -774,6 +812,7 @@ $('#nav').onclick = (e) => {
   if (go === 'wave') showWave();
   if (go === 'search') { $('#q').focus(); setActive('search'); }
   if (go === 'trends') showTrends();
+  if (go === 'likes') showLikes();
 };
 
 $('#plList').onclick = (e) => {
@@ -791,6 +830,7 @@ $('#sf').onsubmit = (e) => {
 // Один обработчик на всю страницу
 $('#content').addEventListener('click', (e) => {
   if (e.target.closest('[data-retry]')) return load(lastLoad);
+  if (e.target.closest('[data-cover]')) return $('#coverInput').click();
 
   const artist = e.target.closest('[data-artist]');
   if (artist) { e.stopPropagation(); return showArtist(artist.dataset.artist); }
@@ -800,8 +840,11 @@ $('#content').addEventListener('click', (e) => {
   if (row && act) {
     e.stopPropagation();
     const t = queue[Number(row.dataset.i)];
-    if (act.dataset.act === 'add') openPopover(act, t);
-    else removeFromPlaylist(t.id);
+    if (!t) return;
+    const a = act.dataset.act;
+    if (a === 'like') return toggleLike(t);
+    if (a === 'add') return openPopover(act, t);
+    if (a === 'remove') return view.type === 'likes' ? toggleLike(t) : removeFromPlaylist(t.id);
     return;
   }
   if (row) return play(Number(row.dataset.i));
@@ -821,6 +864,7 @@ function syncFull() {
   $('#fBg').style.backgroundImage = cs;
   $('#fTitle').textContent = $('#nowTitle').textContent;
   $('#fArtist').textContent = $('#nowArtist').textContent;
+  $('#fLike').classList.toggle('on', isLiked(currentId));
   $('#fToggle').innerHTML = audio.paused ? I_PLAY : I_PAUSE;
   fEl.classList.toggle('paused', audio.paused);
   const p = (audio.currentTime / audio.duration) * 100 || 0;
@@ -933,6 +977,73 @@ $('#fLyrics').onclick = (e) => {
   if (p && isFinite(audio.duration)) audio.currentTime = lyrLines[Number(p.dataset.i)].t;
 };
 audio.addEventListener('timeupdate', updateLyrics);
+
+// ---------- Избранное ----------
+const isLiked = (id) => likes.some((x) => x.id === id);
+
+function markLikes() {
+  $$('.row').forEach((r) => {
+    const b = r.querySelector('.like');
+    if (b) b.classList.toggle('on', isLiked(r.dataset.id));
+  });
+  $('#fLike').classList.toggle('on', isLiked(currentId));
+}
+
+function toggleLike(t) {
+  const i = likes.findIndex((x) => x.id === t.id);
+  if (i >= 0) {
+    likes.splice(i, 1);
+    toast('Убрано из избранного');
+  } else {
+    likes.unshift({ id: t.id, title: t.title, artists: t.artists, duration: t.duration, cover: t.cover });
+    toast('Добавлено в избранное');
+  }
+  saveLikes();
+  if (view.type === 'likes') showLikes(); else markLikes();
+}
+
+function showLikes() {
+  view = { type: 'likes' };
+  setActive('likes');
+  setPage(`
+    <div class="ph">
+      <div class="cover heart">${HEART_SVG}</div>
+      <div>
+        <div class="kicker">Плейлист</div>
+        <h2>Избранное</h2>
+        <div class="sub">${likes.length} треков</div>
+        <div class="acts"><button class="btn" data-play-all ${likes.length ? '' : 'disabled'}>${I_PLAY} Слушать</button></div>
+      </div>
+    </div>`);
+  renderTracks(likes);
+}
+
+$('#fLike').onclick = () => {
+  const t = playQueue.find((x) => x.id === currentId);
+  if (t) toggleLike(t);
+};
+
+// ---------- Фото плейлиста ----------
+$('#coverInput').onchange = (e) => {
+  const f = e.target.files[0];
+  e.target.value = '';
+  const pl = playlists.find((p) => p.id === view.plId);
+  if (!f || !pl || !f.type.startsWith('image/')) return;
+  const url = URL.createObjectURL(f);
+  const img = new Image();
+  img.onload = () => {
+    const side = Math.min(img.width, img.height);
+    const c = document.createElement('canvas');
+    c.width = c.height = 480;
+    c.getContext('2d').drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, 480, 480);
+    URL.revokeObjectURL(url);
+    pl.cover = c.toDataURL('image/jpeg', 0.85);
+    savePlaylists();
+    showPlaylist(pl.id);
+    toast('Фото плейлиста обновлено');
+  };
+  img.src = url;
+};
 
 // ---------- Старт ----------
 renderPlaylists();
