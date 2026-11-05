@@ -38,6 +38,16 @@
   .nav button:hover{color:#fff}
   .nav button.active{color:#fff}
   .nav button.active svg{opacity:1}
+  .nav button{border-radius:999px}
+  aside:not(:hover) .nav button{width:46px;height:46px;margin:0 auto;padding:0;border-radius:50%;justify-content:center;gap:0}
+  aside:not(:hover) .nav button.active{background:#ffffff1c}
+  .nav button.active{background:#ffffff1c}
+
+  /* Плейлисты: название всегда в одну строку с многоточием, без вылезания за капсулу */
+  .pl-wrap{min-width:0;width:100%}
+  #plList{min-width:0}
+  #plList button{display:block;width:100%;min-width:0;max-width:100%;padding:9px 14px;border-radius:999px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-sizing:border-box}
+  #plList button.active{background:#ffffff1c;color:#fff}
   .nav button.active::before{display:none}
 
   /* Подписи плавно выезжают при наведении, в свёрнутом виде скрыты */
@@ -66,7 +76,8 @@
 
   /* ---------- Main ---------- */
   main{grid-column:2;overflow-y:auto;padding:28px 44px 40px;min-width:0}
-  .search{position:relative;max-width:440px;margin-bottom:34px}
+  .search{position:relative;max-width:460px;width:100%;margin:0 auto 34px}
+  .search input{cursor:pointer}
   .search input{width:100%;padding:12px 16px 12px 42px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:14px;outline:none;transition:border-color .25s}
   .search input::placeholder{color:var(--dim)}
   .search input:focus{border-color:#333}
@@ -169,6 +180,21 @@
 
   .toast{position:fixed;top:18px;right:18px;z-index:40;max-width:340px;background:var(--surface2);border:1px solid #2a2a2a;padding:12px 16px;border-radius:12px;font-size:13px;color:#e6e6e6;box-shadow:0 12px 30px #0008;display:none;animation:pop .3s var(--ease) both}
 
+  /* ---------- Полноэкранный поиск ---------- */
+  .sx{position:fixed;inset:0;z-index:35;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility .35s}
+  .sx.open{opacity:1;visibility:visible}
+  .sx-bg{position:absolute;inset:0;background:#0a0a0af2;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .sx-close{position:absolute;top:22px;right:24px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:var(--txt);background:#ffffff14;transition:background .2s,transform .3s var(--ease)}
+  .sx-close:hover{background:#ffffff26;transform:rotate(90deg)}
+  .sx-close svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+  .sx-inner{position:relative;width:min(640px,100%);transform:translateY(-28px) scale(.96);opacity:0;transition:transform .55s var(--ease),opacity .45s var(--ease)}
+  .sx.open .sx-inner{transform:none;opacity:1}
+  .sx-kicker{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--dim);margin-bottom:12px}
+  #sxInput{width:100%;background:transparent;border:0;border-bottom:1px solid #2e2e2e;padding:14px 4px;color:var(--txt);font-size:clamp(24px,4vw,36px);font-weight:700;letter-spacing:-.5px;outline:none;transition:border-color .3s}
+  #sxInput:focus{border-color:#fff}
+  #sxInput::placeholder{color:#3d3d3d}
+  .sx-hint{margin-top:16px;font-size:12px;color:var(--dim)}
+
   /* ---------- Плейлисты и избранное внутри капсулы ---------- */
   .pl-wrap{overflow:hidden;max-height:0;opacity:0;transition:max-height .5s var(--ease),opacity .3s}
   aside:hover .pl-wrap{max-height:560px;opacity:1;transition-delay:.12s}
@@ -246,7 +272,7 @@
     aside{position:static;width:auto;flex-direction:row;overflow-x:auto;overflow-y:hidden;padding:10px 12px;border-radius:0;border:0;border-bottom:1px solid var(--line);box-shadow:none;transition:none;gap:6px;align-items:center}
     aside:hover{width:auto}
     aside:not(:hover) .nav span{max-width:none;opacity:1;transform:none}
-    aside:not(:hover) .nav button{gap:6px;padding:10px 12px}
+    aside:not(:hover) .nav button{gap:6px;padding:10px 12px;width:auto;height:auto;margin:0;border-radius:999px}
     aside:not(:hover) #plList{opacity:1;visibility:visible}
     .brand,.label{display:none}
     .nav{display:flex;gap:6px;margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
@@ -359,6 +385,18 @@
       </div>
     </div>
   </div>
+</div>
+
+<div class="sx" id="sx">
+  <div class="sx-bg"></div>
+  <button class="sx-close" id="sxClose" title="Закрыть">
+    <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <form class="sx-inner" id="sxForm">
+    <div class="sx-kicker">Поиск</div>
+    <input id="sxInput" type="search" placeholder="Исполнители, треки, альбомы" autocomplete="off">
+    <div class="sx-hint">Enter — найти &nbsp;·&nbsp; Esc — закрыть</div>
+  </form>
 </div>
 
 <div class="modal-bg" id="modal">
@@ -810,7 +848,7 @@ $('#nav').onclick = (e) => {
   const go = b.dataset.go;
   if (go === 'home') showHome();
   if (go === 'wave') showWave();
-  if (go === 'search') { $('#q').focus(); setActive('search'); }
+  if (go === 'search') { openSearch(); setActive('search'); }
   if (go === 'trends') showTrends();
   if (go === 'likes') showLikes();
 };
@@ -1044,6 +1082,30 @@ $('#coverInput').onchange = (e) => {
   };
   img.src = url;
 };
+
+// ---------- Полноэкранный поиск ----------
+const sx = $('#sx');
+const sxInput = $('#sxInput');
+function openSearch() {
+  sx.classList.add('open');
+  setTimeout(() => sxInput.focus(), 80);
+}
+function closeSearch() {
+  sx.classList.remove('open');
+  sxInput.blur();
+}
+$('#q').addEventListener('focus', (e) => { e.target.blur(); openSearch(); });
+$('#sxClose').onclick = closeSearch;
+sx.querySelector('.sx-bg').onclick = closeSearch;
+$('#sxForm').onsubmit = (e) => {
+  e.preventDefault();
+  const q = sxInput.value.trim();
+  if (!q) return;
+  closeSearch();
+  $('#q').value = q;
+  showSearch(q);
+};
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSearch(); });
 
 // ---------- Старт ----------
 renderPlaylists();
