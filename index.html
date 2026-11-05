@@ -192,6 +192,18 @@
 
   /* ---------- Библиотека ---------- */
   .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:22px}
+  .release-wrap{margin:0 0 30px}
+  .release-kicker{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#b6b6b6;margin:0 0 12px}
+  .release-kicker:before{content:"";width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 12px #ffffff80}
+  .release-card{display:grid;grid-template-columns:116px minmax(0,1fr);align-items:center;gap:18px;padding:16px;border:1px solid #292929;border-radius:18px;background:linear-gradient(115deg,#1b1b1b,#101010 75%);text-align:left;overflow:hidden;transition:border-color .25s,transform .25s}
+  .release-card:hover{border-color:#454545;transform:translateY(-2px)}
+  .release-cover{width:116px;aspect-ratio:1;border-radius:12px;background:var(--surface2) center/cover;box-shadow:0 10px 30px #0008}
+  .release-tag{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#888;margin-bottom:7px}
+  .release-name{font-size:20px;font-weight:800;letter-spacing:-.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .release-sub{font-size:13px;color:var(--muted);margin-top:5px}
+  .release-cta{display:inline-flex;align-items:center;gap:7px;margin-top:13px;font-size:12px;font-weight:700;color:#eee}
+  .more{display:flex;justify-content:center;margin:18px 0 8px}
+  @media(max-width:600px){.release-card{grid-template-columns:84px minmax(0,1fr);gap:13px;padding:12px}.release-cover{width:84px}.release-name{font-size:17px}}
   .pcard{display:flex;flex-direction:column;gap:10px;text-align:left;min-width:0;animation:rise .5s var(--ease) both;transition:transform .35s var(--ease)}
   .pcard:hover{transform:translateY(-4px)}
   .pc-cover{width:100%;aspect-ratio:1;border-radius:16px;background:var(--surface2) center/cover;box-shadow:0 14px 30px #0008}
@@ -406,14 +418,14 @@
   }
 
   /* ---------- Профиль, авторизация, админка ---------- */
-  .search{margin-right:58px}
+  .search{margin:0 auto 34px;transform:translateX(-55px)}
   .me-btn{position:fixed;top:calc(env(safe-area-inset-top,0px) + 18px);right:22px;z-index:18;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:16px;background:linear-gradient(135deg,#3a3a3a,#171717);border:1px solid #ffffff22;transition:transform .35s var(--ease),box-shadow .35s}
   .me-btn:hover{transform:scale(1.1);box-shadow:0 0 0 5px #ffffff14}
   .me-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
   .pf-bg{position:fixed;inset:0;z-index:40;background:#000a;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .5s var(--ease)}
   .pf-bg.open{opacity:1;pointer-events:auto}
-  .pf{position:fixed;top:12px;right:12px;bottom:12px;width:min(390px,calc(100% - 24px));z-index:41;border-radius:30px;background:linear-gradient(180deg,#1b1b1b,#0e0e0e);border:1px solid #ffffff1f;box-shadow:-30px 0 90px #000c;padding:30px 24px;overflow-y:auto;scrollbar-width:none;transform:translateX(calc(100% + 40px)) scale(.94);opacity:0;pointer-events:none;transition:transform .7s cubic-bezier(.16,1,.3,1),opacity .4s}
-  .pf.open{transform:none;opacity:1;pointer-events:auto}
+  .pf{position:fixed;top:50%;left:50%;right:auto;bottom:auto;width:min(430px,calc(100% - 28px));max-height:calc(100dvh - 28px);z-index:41;border-radius:30px;background:linear-gradient(180deg,#1b1b1b,#0e0e0e);border:1px solid #ffffff1f;box-shadow:0 30px 100px #000c;padding:30px 24px;overflow-y:auto;scrollbar-width:none;transform:translate(-50%,-46%) scale(.94);opacity:0;pointer-events:none;transition:transform .55s cubic-bezier(.16,1,.3,1),opacity .4s}
+  .pf.open{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto}
   .pf .st{opacity:0}
   .pf.open .st{animation:pfIn .8s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i,0)*85ms + 200ms)}
   @keyframes pfIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
@@ -448,6 +460,11 @@
   .pf-p{color:var(--muted);font-size:13px;margin-top:6px}
   .pf-in{width:100%;padding:13px 16px;margin-bottom:10px;border-radius:14px;background:#ffffff0a;border:1px solid #ffffff14;outline:0;font-size:14px;transition:border-color .25s,background .25s}
   .pf-in:focus{border-color:#ffffff44;background:#ffffff10}
+  .pf #authF{width:min(100%,340px);margin:0 auto;text-align:center}
+  .pf #authF .pf-h,.pf #authF .pf-p{text-align:center}
+  .pf #authF .pf-tabs{margin-top:24px}
+  .pf #authF .pf-btn{box-shadow:0 8px 24px #0005}
+  .pf #authF .pf-in{text-align:left}
   .pf-err{color:#e07070;font-size:13px;min-height:18px;margin:2px 0 8px}
   .ad{display:grid;gap:22px;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}
   .ad-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px}
@@ -462,7 +479,7 @@
   .ad-t small{color:var(--muted);font-size:12px}
   .ad-t button{min-width:30px;height:30px;padding:0 10px;border-radius:999px;background:var(--surface2);flex:none;font-size:12px}
   @media (max-width:900px){.ad{grid-template-columns:1fr}}
-  @media (max-width:760px){.search{margin-right:0}.me-btn{right:14px;top:calc(env(safe-area-inset-top,0px) + 12px)}.pf{top:8px;right:8px;bottom:8px;width:calc(100% - 16px)}}
+  @media (max-width:760px){.search{margin:0 0 22px;transform:none}.me-btn{right:14px;top:calc(env(safe-area-inset-top,0px) + 12px)}.pf{top:50%;left:50%;right:auto;bottom:auto;width:calc(100% - 24px);max-height:calc(100dvh - 24px);padding:26px 18px;transform:translate(-50%,-46%) scale(.94)}.pf.open{transform:translate(-50%,-50%) scale(1)}}
   /* ---------- Страница артиста ---------- */
   .ahead{display:flex;gap:30px;align-items:flex-end;margin-bottom:34px}
   .aavatar{width:210px;height:210px;border-radius:50%;background:var(--surface2) center/cover;flex:none;box-shadow:0 30px 70px #000c;animation:pop .7s var(--ease) both}
@@ -723,17 +740,18 @@ function row(t, i) {
 }
 
 let visibleN = 15;   // сколько треков показывать на странице артиста
+let homeExpanded = false;
 function renderTracks(tracks) {
   queue = tracks;
   if (!tracks.length) {
     setBody(`<p class="sub">${view.type === 'playlist' ? 'В плейлисте пока пусто. Добавляйте треки кнопкой «+».' : view.type === 'likes' ? 'Здесь появятся треки, которые вы лайкнули ♥' : 'Ничего не найдено'}</p>`);
     return;
   }
-  const limited = view.type === 'artist' && tracks.length > visibleN;
-  const shown = limited ? tracks.slice(0, visibleN) : tracks;
-  const more = limited
-    ? `<div class="more"><button class="btn ghost" data-more>Показать ещё ${Math.min(15, tracks.length - visibleN)}</button></div>`
-    : '';
+  const limited = (view.type === 'artist' && tracks.length > visibleN) || (view.type === 'home' && tracks.length > 5 && !homeExpanded);
+  const shown = view.type === 'home' && !homeExpanded ? tracks.slice(0, 5) : (view.type === 'artist' && limited ? tracks.slice(0, visibleN) : tracks);
+  const more = view.type === 'home' && tracks.length > 5
+    ? `<div class="more"><button class="btn ghost" data-home-more>${homeExpanded ? '↑ Свернуть список' : `Показать остальные ${tracks.length - 5} треков ↓`}</button></div>`
+    : limited ? `<div class="more"><button class="btn ghost" data-more>Показать ещё ${Math.min(15, tracks.length - visibleN)}</button></div>` : '';
   setBody(`<div class="list${view.type === 'trends' ? ' chart' : ''}">${shown.map(row).join('')}</div>${more}`);
   markPlaying();
 }
@@ -786,6 +804,7 @@ async function homeMix() {
 }
 
 function showHome() {
+  homeExpanded = false;
   view = { type: 'home' };
   setActive('home');
   setPage(`
@@ -795,8 +814,8 @@ function showHome() {
       <button class="btn" data-wave>${I_PLAY} Моя волна</button>
     </div>
     <div id="fpBox"></div>
-    <div class="section">Что послушать</div>
-    <div class="sub" style="margin:-8px 0 14px">${likes.length ? 'Подборка по исполнителям, которых вы лайкнули' : 'Подборка популярных треков'}</div>`);
+    <div class="section">Популярные треки</div>
+    <div class="sub" style="margin:-8px 0 14px">${likes.length ? 'Подборка по исполнителям, которых вы лайкнули' : 'Популярное сейчас'}</div>`);
   loadFeatured();
   setBody('<p class="sub">Подбираем треки…</p>');
   const my = loadId;
@@ -1198,6 +1217,7 @@ $('#sf').onsubmit = (e) => {
 // Один обработчик на всю страницу
 $('#content').addEventListener('click', (e) => {
   if (e.target.closest('[data-retry]')) return load(lastLoad);
+  if (e.target.closest('[data-home-more]')) { homeExpanded = !homeExpanded; return renderTracks(queue); }
   if (e.target.closest('[data-more]')) { visibleN += 15; return renderTracks(queue); }
   const go = e.target.closest('[data-go]');
   if (go) return route(go.dataset.go);
@@ -1583,8 +1603,11 @@ async function loadFeatured() {
     const { playlists: list } = await api('/api/u/featured');
     const box = $('#fpBox');
     if (!box || view.type !== 'home' || !list.length) return;
-    const cats = [...new Set(list.map((p) => p.category))];
-    box.innerHTML = cats.map((c) => `<div class="section">${esc(c)}</div><div class="pgrid">${list.filter((p) => p.category === c).map((p) =>
+    const newest = list[0];
+    const rest = list.slice(1);
+    const release = `<div class="release-wrap"><div class="release-kicker">Новый релиз</div><button class="release-card" data-fp="${esc(newest.id)}"><div class="release-cover" style="${bg(newest.cover)}"></div><div><div class="release-tag">Wave · премьера</div><div class="release-name">${esc(newest.name)}</div><div class="release-sub">${esc(newest.category || 'Новая подборка')} · ${newest.count ?? '—'} треков</div><div class="release-cta">${I_PLAY} Слушать релиз</div></div></button></div>`;
+    const cats = [...new Set(rest.map((p) => p.category))];
+    box.innerHTML = release + cats.map((c) => `<div class="section">${esc(c)}</div><div class="pgrid">${rest.filter((p) => p.category === c).map((p) =>
       `<button class="pcard" data-fp="${esc(p.id)}"><div class="pc-cover" style="${bg(p.cover)}"></div><div class="pc-name">${esc(p.name)}</div><div class="pc-sub">${p.count} треков</div></button>`).join('')}</div>`).join('');
   } catch (_) { /* база может быть ещё не подключена: главная работает и без неё */ }
 }
