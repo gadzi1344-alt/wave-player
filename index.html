@@ -303,7 +303,8 @@ let playQueue = [];     // очередь текущего воспроизве�
 let currentId = null;   // id играющего трека
 let pendingSeek = 0;    // позиция, куда перемотать после загрузки трека
 let restoredTime = 0;   // позиция трека, восстановленного после перезагрузки
-let loadId = 0;         // защита от гонки запросов
+let loadId = 0;         // защита от гонки запросов страниц
+let playToken = 0;      // защита от гонки запросов потока: играет только последний выбранный трек
 let lastLoad = null;    // последний путь загрузки (для кнопки «Повторить»)
 let view = { type: 'home' };
 let playlists = JSON.parse(localStorage.getItem('wave.playlists') || '[]');
@@ -343,7 +344,7 @@ async function api(path) {
 
 // ---------- Рендер ----------
 function setPage(head) {
-  loadId++; // любые незавершённые загрузки старой страницы больше не применятся
+  loadId++; // незавершённые загрузки старой страницы больше не применятся
   const c = $('#content');
   c.style.animation = 'none';
   void c.offsetWidth;
@@ -545,6 +546,8 @@ function restoreState() {
 
 async function play(i, seek = 0, list = queue) {
   if (i < 0 || i >= list.length) return;
+  const my = ++playToken;          // новый запрос отменяет все предыдущие
+  audio.pause();                   // старый трек сразу останавливается
   playQueue = list;
   const t = list[i];
   currentId = t.id;
@@ -554,10 +557,11 @@ async function play(i, seek = 0, list = queue) {
   saveState(true);
   try {
     const { url } = await api('/api/stream?id=' + enc(t.id));
+    if (my !== playToken) return;  // пользователь уже выбрал другой трек
     audio.src = url;
     await audio.play();
   } catch (e) {
-    toast('Не удалось воспроизвести: ' + e.message);
+    if (my === playToken) toast('Не удалось воспроизвести: ' + e.message);
   }
 }
 
