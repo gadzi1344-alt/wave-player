@@ -813,10 +813,8 @@ function showHome() {
       <h1>Добро пожаловать</h1>
       <p>Музыка в стиле исполнителей, которых вы отметили</p>
     </div>
-    <div id="fpBox"></div>
     <div class="section">Для вас</div>
     <div class="sub" style="margin:-8px 0 14px">${likes.length ? 'На основе исполнителей из избранного' : 'Лайкните трек, чтобы настроить рекомендации'}</div>`);
-  loadFeatured();
   setBody('<p class="sub">Подбираем треки…</p>');
   const my = loadId;
   homeMix()
@@ -852,7 +850,7 @@ function showTrends() {
       <h2>Топ-чарт</h2>
       <div class="sub">Россия</div>
     </div></div>`);
-  load('/api/chart?option=russia').then((t) => { if (t && t.length && view.type === 'trends') syncChartPlaylist(t); });
+  load('/api/chart?option=russia');
 }
 
 // ---------- Страница артиста (как в Яндекс Музыке) ----------
@@ -1077,9 +1075,10 @@ window.addEventListener('beforeunload', () => saveState(true));
 
 // ---------- Плейлисты ----------
 function renderPlaylists() {
-  $('#plList').innerHTML = playlists.length
-    ? playlists.map((p) => `<button data-pl="${esc(p.id)}">${esc(p.name)}</button>`).join('')
-    : '<div class="empty">Плейлистов пока нет</div>';
+  const visiblePlaylists = playlists.filter((p) => p.id !== CHART_PL_ID && !p.auto);
+  $('#plList').innerHTML = visiblePlaylists.length
+    ? visiblePlaylists.map((p) => `<button data-pl="${esc(p.id)}">${esc(p.name)}</button>`).join('')
+    : '<div class="empty">Плейлисты доступны в карточках артистов</div>';
   setActive(view.type === 'playlist' ? 'pl:' + view.plId : view.type);
 }
 
