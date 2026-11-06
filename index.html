@@ -510,6 +510,19 @@
     .nr-cover{width:92px;height:92px}
     .nr-name{font-size:17px}
   }
+  /* ---------- Альбомы: увеличение при наведении, нажатие, плавное появление ---------- */
+  .acard{transition:transform .5s var(--ease)}
+  .acard .ac-cover{transition:transform .6s var(--ease),box-shadow .5s var(--ease)}
+  .acard:hover{transform:translateY(-5px) scale(1.03)}
+  .acard:hover .ac-cover{transform:scale(1.06);box-shadow:0 26px 50px #000d}
+  .acard:active{transform:scale(.97);transition-duration:.15s}
+  .hrow .acard:nth-child(2){animation-delay:70ms}
+  .hrow .acard:nth-child(3){animation-delay:140ms}
+  .hrow .acard:nth-child(4){animation-delay:210ms}
+  .hrow .acard:nth-child(5){animation-delay:280ms}
+  .hrow .acard:nth-child(6){animation-delay:350ms}
+  .hrow .acard:nth-child(7){animation-delay:420ms}
+  .hrow .acard:nth-child(8){animation-delay:490ms}
 </style>
 </head>
 <body>
@@ -851,7 +864,7 @@ function showTrends() {
       <h2>Топ-чарт</h2>
       <div class="sub">Россия</div>
     </div></div>`);
-  load('/api/chart?option=russia').then((t) => { if (t && t.length && view.type === 'trends') syncChartPlaylist(t); });
+  load('/api/chart?option=russia');
 }
 
 // ---------- Страница артиста (как в Яндекс Музыке) ----------
@@ -865,7 +878,7 @@ function setPageRaw(html) {
 }
 
 const albumCard = (a) => `<button class="acard" data-album="${esc(a.id)}"><div class="ac-cover" style="${bg(a.cover)}"></div><div class="ac-t">${esc(a.title)}</div><div class="ac-s">${a.year || ''}${a.type ? ' · ' + esc(a.type) : ''}</div></button>`;
-const fpCard = (p) => `<button class="acard" data-fp="${esc(p.id)}"><div class="ac-cover" style="${bg(p.cover || (p.tracks || [])[0]?.cover)}"></div><div class="ac-t">${esc(p.name)}</div><div class="ac-s">${esc(p.category)} · ${p.count ?? (p.tracks || []).length} треков</div></button>`;
+const fpCard = (p) => `<button class="acard" data-fp="${esc(p.id)}"><div class="ac-cover" style="${bg(fpCover(p))}"></div><div class="ac-t">${esc(p.name)}</div><div class="ac-s">${esc(p.category)} · ${p.count ?? (p.tracks || []).length} треков</div></button>`;
 
 // Подборки администратора, в которых есть этот исполнитель
 async function featuredWithArtist(aid) {
@@ -1601,7 +1614,7 @@ async function loadFeatured() {
     if (!box || view.type !== 'home' || !list.length) return;
     const cats = [...new Set(list.map((p) => p.category))];
     box.innerHTML = cats.map((c) => `<div class="section">${esc(c)}</div><div class="pgrid">${list.filter((p) => p.category === c).map((p) =>
-      `<button class="pcard" data-fp="${esc(p.id)}"><div class="pc-cover" style="${bg(p.cover)}"></div><div class="pc-name">${esc(p.name)}</div><div class="pc-sub">${p.count} треков</div></button>`).join('')}</div>`).join('');
+      `<button class="pcard" data-fp="${esc(p.id)}"><div class="pc-cover" style="${bg(fpCover(p))}"></div><div class="pc-name">${esc(p.name)}</div><div class="pc-sub">${p.count} треков</div></button>`).join('')}</div>`).join('');
   } catch (_) { /* база может быть ещё не подключена: главная работает и без неё */ }
 }
 async function showFeatured(id) {
@@ -1611,7 +1624,7 @@ async function showFeatured(id) {
     if (my !== loadId) return;
     view = { type: 'featured' };
     setActive('home');
-    setPage(`<div class="ph"><div class="cover" style="${bg(p.cover || p.tracks[0]?.cover)}"></div><div>
+    setPage(`<div class="ph"><div class="cover" style="${bg(fpCover(p))}"></div><div>
       <div class="kicker">${esc(p.category)}</div><h2>${esc(p.name)}</h2><div class="sub">${p.tracks.length} треков</div>
       <div class="acts"><button class="btn" data-play-all ${p.tracks.length ? '' : 'disabled'}>${I_PLAY} Слушать</button></div></div></div>`);
     renderTracks(p.tracks);
@@ -1690,11 +1703,8 @@ async function showAdmin() {
   };
 }
 
-// ---------- Чарт: автоплейлист «Горячее сейчас» ----------
-const CHART_PL_ID = 'auto-chart';
-const CHART_PL_NAME = 'Горячее сейчас';
-
-// Акварельная обложка: мягкие цветные пятна и бумажная зернистость
+// ---------- Генерация обложек для редакционных подборок ----------
+// Акварельная обложка: мягкие цветные пятна и бумажная зернистость (без внешних картинок)
 function watercolorCover(seed) {
   const c = document.createElement('canvas');
   c.width = c.height = 480;
@@ -1717,26 +1727,25 @@ function watercolorCover(seed) {
     x.fillRect(0, 0, 480, 480);
   }
   x.globalCompositeOperation = 'source-over';
-  for (let i = 0; i < 7000; i++) {
+  for (let i = 0; i < 3000; i++) {
     x.fillStyle = `rgba(255,255,255,${rnd() * 0.03})`;
     x.fillRect(rnd() * 480, rnd() * 480, 2, 2);
   }
   return c.toDataURL('image/jpeg', 0.85);
 }
 
-function syncChartPlaylist(tracks) {
-  let pl = playlists.find((p) => p.id === CHART_PL_ID);
-  const created = !pl;
-  if (!pl) {
-    pl = { id: CHART_PL_ID, name: CHART_PL_NAME, auto: true, tracks: [], cover: '' };
-    playlists.unshift(pl);
-  }
-  pl.tracks = tracks.slice(0, 50).map((t) => ({ id: t.id, title: t.title, artists: t.artists, duration: t.duration, cover: t.cover }));
-  if (!pl.cover) pl.cover = watercolorCover(CHART_PL_ID);
-  savePlaylists();
-  renderPlaylists();
-  if (created) toast(`Создан плейлист «${CHART_PL_NAME}»`);
+// Обложка подборки: своя, если загружена, иначе сгенерированная (кэшируется)
+const coverCache = {};
+function fpCover(p) {
+  if (p.cover) return p.cover;
+  const key = String(p.id) + '|' + (p.name || '');
+  if (!coverCache[key]) coverCache[key] = watercolorCover(key);
+  return coverCache[key];
 }
+
+// Убираем автоплейлист, который создался раньше
+playlists = playlists.filter((p) => p.id !== 'auto-chart');
+savePlaylists();
 
 // ---------- Старт ----------
 renderPlaylists();
