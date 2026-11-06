@@ -192,18 +192,6 @@
 
   /* ---------- Библиотека ---------- */
   .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:22px}
-  .release-wrap{margin:0 0 30px}
-  .release-kicker{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#b6b6b6;margin:0 0 12px}
-  .release-kicker:before{content:"";width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 12px #ffffff80}
-  .release-card{display:grid;grid-template-columns:116px minmax(0,1fr);align-items:center;gap:18px;padding:16px;border:1px solid #292929;border-radius:18px;background:linear-gradient(115deg,#1b1b1b,#101010 75%);text-align:left;overflow:hidden;transition:border-color .25s,transform .25s}
-  .release-card:hover{border-color:#454545;transform:translateY(-2px)}
-  .release-cover{width:116px;aspect-ratio:1;border-radius:12px;background:var(--surface2) center/cover;box-shadow:0 10px 30px #0008}
-  .release-tag{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#888;margin-bottom:7px}
-  .release-name{font-size:20px;font-weight:800;letter-spacing:-.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .release-sub{font-size:13px;color:var(--muted);margin-top:5px}
-  .release-cta{display:inline-flex;align-items:center;gap:7px;margin-top:13px;font-size:12px;font-weight:700;color:#eee}
-  .more{display:flex;justify-content:center;margin:18px 0 8px}
-  @media(max-width:600px){.release-card{grid-template-columns:84px minmax(0,1fr);gap:13px;padding:12px}.release-cover{width:84px}.release-name{font-size:17px}}
   .pcard{display:flex;flex-direction:column;gap:10px;text-align:left;min-width:0;animation:rise .5s var(--ease) both;transition:transform .35s var(--ease)}
   .pcard:hover{transform:translateY(-4px)}
   .pc-cover{width:100%;aspect-ratio:1;border-radius:16px;background:var(--surface2) center/cover;box-shadow:0 14px 30px #0008}
@@ -418,14 +406,14 @@
   }
 
   /* ---------- Профиль, авторизация, админка ---------- */
-  .search{margin:0 auto 34px;transform:translateX(-55px)}
+  .search{margin-right:58px}
   .me-btn{position:fixed;top:calc(env(safe-area-inset-top,0px) + 18px);right:22px;z-index:18;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:16px;background:linear-gradient(135deg,#3a3a3a,#171717);border:1px solid #ffffff22;transition:transform .35s var(--ease),box-shadow .35s}
   .me-btn:hover{transform:scale(1.1);box-shadow:0 0 0 5px #ffffff14}
   .me-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
   .pf-bg{position:fixed;inset:0;z-index:40;background:#000a;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .5s var(--ease)}
   .pf-bg.open{opacity:1;pointer-events:auto}
-  .pf{position:fixed;top:50%;left:50%;right:auto;bottom:auto;width:min(430px,calc(100% - 28px));max-height:calc(100dvh - 28px);z-index:41;border-radius:30px;background:linear-gradient(180deg,#1b1b1b,#0e0e0e);border:1px solid #ffffff1f;box-shadow:0 30px 100px #000c;padding:30px 24px;overflow-y:auto;scrollbar-width:none;transform:translate(-50%,-46%) scale(.94);opacity:0;pointer-events:none;transition:transform .55s cubic-bezier(.16,1,.3,1),opacity .4s}
-  .pf.open{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto}
+  .pf{position:fixed;top:12px;right:12px;bottom:12px;width:min(390px,calc(100% - 24px));z-index:41;border-radius:30px;background:linear-gradient(180deg,#1b1b1b,#0e0e0e);border:1px solid #ffffff1f;box-shadow:-30px 0 90px #000c;padding:30px 24px;overflow-y:auto;scrollbar-width:none;transform:translateX(calc(100% + 40px)) scale(.94);opacity:0;pointer-events:none;transition:transform .7s cubic-bezier(.16,1,.3,1),opacity .4s}
+  .pf.open{transform:none;opacity:1;pointer-events:auto}
   .pf .st{opacity:0}
   .pf.open .st{animation:pfIn .8s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i,0)*85ms + 200ms)}
   @keyframes pfIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
@@ -460,11 +448,6 @@
   .pf-p{color:var(--muted);font-size:13px;margin-top:6px}
   .pf-in{width:100%;padding:13px 16px;margin-bottom:10px;border-radius:14px;background:#ffffff0a;border:1px solid #ffffff14;outline:0;font-size:14px;transition:border-color .25s,background .25s}
   .pf-in:focus{border-color:#ffffff44;background:#ffffff10}
-  .pf #authF{width:min(100%,340px);margin:0 auto;text-align:center}
-  .pf #authF .pf-h,.pf #authF .pf-p{text-align:center}
-  .pf #authF .pf-tabs{margin-top:24px}
-  .pf #authF .pf-btn{box-shadow:0 8px 24px #0005}
-  .pf #authF .pf-in{text-align:left}
   .pf-err{color:#e07070;font-size:13px;min-height:18px;margin:2px 0 8px}
   .ad{display:grid;gap:22px;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}
   .ad-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px}
@@ -479,14 +462,13 @@
   .ad-t small{color:var(--muted);font-size:12px}
   .ad-t button{min-width:30px;height:30px;padding:0 10px;border-radius:999px;background:var(--surface2);flex:none;font-size:12px}
   @media (max-width:900px){.ad{grid-template-columns:1fr}}
-  @media (max-width:760px){.search{margin:0 0 22px;transform:none}.me-btn{right:14px;top:calc(env(safe-area-inset-top,0px) + 12px)}.pf{top:50%;left:50%;right:auto;bottom:auto;width:calc(100% - 24px);max-height:calc(100dvh - 24px);padding:26px 18px;transform:translate(-50%,-46%) scale(.94)}.pf.open{transform:translate(-50%,-50%) scale(1)}}
+  @media (max-width:760px){.search{margin-right:0}.me-btn{right:14px;top:calc(env(safe-area-inset-top,0px) + 12px)}.pf{top:8px;right:8px;bottom:8px;width:calc(100% - 16px)}}
   /* ---------- Страница артиста ---------- */
   .ahead{display:flex;gap:30px;align-items:flex-end;margin-bottom:34px}
   .aavatar{width:210px;height:210px;border-radius:50%;background:var(--surface2) center/cover;flex:none;box-shadow:0 30px 70px #000c;animation:pop .7s var(--ease) both}
   .ainfo{min-width:0}
   .aname{font-size:clamp(40px,5.5vw,72px);font-weight:900;letter-spacing:-2px;line-height:1;margin:6px 0 10px}
   .ainfo .acts{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
-  .artist-monthly{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:8px 12px;border:1px solid #ffffff14;border-radius:999px;background:linear-gradient(110deg,#ffffff0c,#ffffff04);color:#cfcfcf;font-size:12px;font-weight:650}.artist-monthly .dot{width:6px;height:6px;border-radius:50%;background:#9ee6bd;box-shadow:0 0 10px #9ee6bd70}.artist-monthly b{color:#fff;font-variant-numeric:tabular-nums}
   .acols{display:grid;grid-template-columns:minmax(0,1fr);gap:40px;margin-bottom:10px}
   .newrel-col{width:min(320px,100%)}
   .more{display:flex;justify-content:center;margin:18px 0 4px}
@@ -495,16 +477,6 @@
   .nr-cover{width:100%;aspect-ratio:1;border-radius:16px;background:var(--surface2) center/cover;box-shadow:0 20px 40px #0009}
   .nr-name{font-weight:700;margin-top:12px;font-size:15px}
   .nr-sub{color:var(--muted);font-size:13px;margin-top:4px}
-  .artist-release{margin:0 0 30px;max-width:720px}
-  .artist-release-card{display:flex;align-items:center;gap:18px;width:100%;padding:14px;text-align:left;border:1px solid #ffffff14;border-radius:20px;background:linear-gradient(115deg,#202020,#111);transition:transform .25s,border-color .25s;overflow:hidden}
-  .artist-release-card:hover{transform:translateY(-2px);border-color:#ffffff35}
-  .artist-release-cover{width:104px;height:104px;flex:none;border-radius:14px;background:var(--surface2) center/cover;box-shadow:0 10px 28px #0008}
-  .artist-release-info{min-width:0}
-  .artist-release-kicker{font-size:10px;font-weight:800;letter-spacing:.13em;color:#a7a7a7;margin-bottom:7px}
-  .artist-release-title{font-size:clamp(18px,3vw,25px);font-weight:850;letter-spacing:-.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .artist-release-sub{font-size:13px;color:var(--muted);margin-top:5px}
-  .artist-release-cta{display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:7px 12px;border-radius:999px;background:#ffffff12;font-size:12px;font-weight:750}
-  @media(max-width:600px){.artist-release-card{gap:12px;padding:11px}.artist-release-cover{width:82px;height:82px}.artist-release-kicker{font-size:9px}.artist-release-sub{font-size:12px}}
   .hrow{display:flex;gap:16px;overflow-x:auto;padding:4px 2px 16px;scroll-snap-type:x mandatory;scrollbar-width:none}
   .hrow::-webkit-scrollbar{display:none}
   .acard{flex:0 0 164px;scroll-snap-align:start;text-align:left;min-width:0;animation:rise .5s var(--ease) both;transition:transform .35s var(--ease)}
@@ -521,6 +493,23 @@
     .acard{flex-basis:146px}
     .ac-cover{width:146px;height:146px}
   }
+  /* ---------- Новый релиз и кнопка «Показать остальные» ---------- */
+  .newrel{display:flex;gap:20px;align-items:center;width:100%;max-width:680px;padding:14px;border-radius:20px;background:var(--surface);border:1px solid var(--line);text-align:left;animation:rise .6s var(--ease) both;transition:background .3s,transform .35s var(--ease),border-color .3s}
+  .newrel:hover{background:var(--surface2);border-color:#2c2c2c;transform:translateY(-2px)}
+  .nr-cover{width:124px;height:124px;border-radius:14px;flex:none;background:var(--surface2) center/cover;box-shadow:0 14px 30px #0008}
+  .nr-info{min-width:0;flex:1}
+  .nr-tag{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--dim)}
+  .nr-name{font-size:21px;font-weight:800;letter-spacing:-.4px;margin:6px 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nr-sub{color:var(--muted);font-size:13px}
+  .more-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:440px;margin:22px auto 6px;padding:14px 20px;border-radius:999px;border:1px solid #2e2e2e;background:transparent;color:var(--txt);font-weight:600;font-size:14px;transition:background .25s,border-color .25s,transform .25s var(--ease)}
+  .more-btn:hover{background:var(--surface);border-color:#444;transform:translateY(-1px)}
+  .more-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s var(--ease)}
+  .more-btn:hover svg{transform:translateY(2px)}
+  @media (max-width:760px){
+    .newrel{padding:10px;gap:14px}
+    .nr-cover{width:92px;height:92px}
+    .nr-name{font-size:17px}
+  }
 </style>
 </head>
 <body>
@@ -531,16 +520,21 @@
     <nav class="nav" id="nav">
       <button data-go="home">
         <svg viewBox="0 0 24 24"><path d="M3 12h2l2-6 3 12 3-9 2 6h6"/></svg><span>Главная</span></button>
+      <button data-go="wave">
+        <svg viewBox="0 0 24 24"><path d="M12 3v18M7 8v8M17 8v8M3 11v2M21 11v2"/></svg><span>Моя волна</span></button>
       <button data-go="search">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Поиск</span></button>
       <button data-go="trends">
         <svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><span>Тренды</span></button>
       <button data-go="likes">
         <svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-9.6-9.2C.9 8.2 2.8 4.5 6.6 4.5c2.3 0 3.8 1.3 5.4 3.1 1.6-1.8 3.1-3.1 5.4-3.1 3.8 0 5.7 3.7 4.2 6.8-2.1 4.6-9.6 9.2-9.6 9.2z"/></svg><span>Избранное</span></button>
+      <div class="pl-wrap">
+        <div class="label"><span>Плейлисты</span><button class="plus" id="newPl" title="Новый плейлист">+</button></div>
+        <div id="plList"></div>
+      </div>
       <button data-go="library">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Библиотека</span></button>
     </nav>
-    <div id="plList" hidden></div>
   </aside>
 
   <main>
@@ -624,7 +618,6 @@
   </form>
 </div>
 
-
 <div class="modal-bg" id="modal">
   <form class="modal" id="modalForm">
     <h3>Новый плейлист</h3>
@@ -639,6 +632,7 @@
 <div class="toast" id="toast"></div>
 <nav class="tabbar" id="tabbar">
   <button data-go="home"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 12h2l2-6 3 12 3-9 2 6h6"/></svg></span><span>Главная</span></button>
+  <button data-go="wave"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 3v18M7 8v8M17 8v8M3 11v2M21 11v2"/></svg></span><span>Волна</span></button>
   <button data-go="trends"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span><span>Тренды</span></button>
   <button data-go="likes"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-9.6-9.2C.9 8.2 2.8 4.5 6.6 4.5c2.3 0 3.8 1.3 5.4 3.1 1.6-1.8 3.1-3.1 5.4-3.1 3.8 0 5.7 3.7 4.2 6.8-2.1 4.6-9.6 9.2-9.6 9.2z"/></svg></span><span>Избранное</span></button>
   <button data-go="library"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></span><span>Библиотека</span></button>
@@ -729,7 +723,7 @@ function row(t, i) {
   const liked = isLiked(t.id);
   const extra = view.type === 'playlist'
     ? '<button data-act="remove" title="Убрать из плейлиста">×</button>'
-    : '';
+    : view.type === 'likes' ? '' : '<button data-act="add" title="Добавить в плейлист">+</button>';
   return `
     <div class="row" data-i="${i}" data-id="${esc(t.id)}" style="animation-delay:${Math.min(i, 25) * 25}ms">${view.type === 'trends' ? `<div class="rank${i < 3 ? ' top' : ''}">${String(i + 1).padStart(2, '0')}</div>` : ''}
       <div class="thumb" style="${bg(t.cover)}">
@@ -745,7 +739,8 @@ function row(t, i) {
     </div>`;
 }
 
-let visibleN = 6;   // первые 6 популярных треков на странице артиста
+let visibleN = 5;   // сколько треков показывать на странице артиста сначала
+const CHEVRON = '<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
 function renderTracks(tracks) {
   queue = tracks;
   if (!tracks.length) {
@@ -755,7 +750,7 @@ function renderTracks(tracks) {
   const limited = view.type === 'artist' && tracks.length > visibleN;
   const shown = limited ? tracks.slice(0, visibleN) : tracks;
   const more = limited
-    ? `<div class="more"><button class="btn ghost" data-more>Показать остальные · ${tracks.length - visibleN}</button></div>`
+    ? `<button class="more-btn" data-more>Показать остальные · ${tracks.length - visibleN}${CHEVRON}</button>`
     : '';
   setBody(`<div class="list${view.type === 'trends' ? ' chart' : ''}">${shown.map(row).join('')}</div>${more}`);
   markPlaying();
@@ -788,19 +783,21 @@ const shuffleArr = (arr) => {
   return a;
 };
 
-// Персональная подборка строится только на артистах, которых пользователь лайкнул.
+// Подборка: треки из смеси исполнителей, которых пользователь лайкал
 async function homeMix() {
-  const likedArtists = [...new Map(likes.flatMap((t) => (t.artists || []).map((a) => [String(a.id || a.name), a]))).values()];
-  if (!likedArtists.length) return [];
-  const lists = await Promise.all(likedArtists.slice(0, 5).map((a) =>
-    api('/api/search?q=' + enc(a.name)).then((d) => d.tracks || []).catch(() => [])));
-  const seen = new Set(likes.map((t) => String(t.id)));
+  const fromLikes = [...new Set(likes.flatMap((t) => (t.artists || []).map((a) => a.name)))];
+  const pool = fromLikes.length
+    ? shuffleArr(fromLikes).slice(0, 3)
+    : shuffleArr(['популярные хиты', 'лучшие треки недели', 'топ русский рэп']).slice(0, 3);
+  const lists = await Promise.all(pool.map((q) =>
+    api('/api/search?q=' + enc(q)).then((d) => d.tracks || []).catch(() => [])));
+  const seen = new Set();
   const out = [];
   const longest = Math.max(0, ...lists.map((l) => l.length));
   for (let i = 0; i < longest; i++) {
     for (const l of lists) {
       const t = l[i];
-      if (t && !seen.has(String(t.id))) { seen.add(String(t.id)); out.push(t); }
+      if (t && !seen.has(t.id)) { seen.add(t.id); out.push(t); }
     }
   }
   return out.slice(0, 30);
@@ -812,14 +809,17 @@ function showHome() {
   setPage(`
     <div class="hero">
       <h1>Добро пожаловать</h1>
-      <p>Музыка в стиле исполнителей, которых вы отметили</p>
+      <p>Слушайте музыку и собирайте свои плейлисты</p>
+      <button class="btn" data-wave>${I_PLAY} Моя волна</button>
     </div>
-    <div class="section">Для вас</div>
-    <div class="sub" style="margin:-8px 0 14px">${likes.length ? 'На основе исполнителей из избранного' : 'Лайкните трек, чтобы настроить рекомендации'}</div>`);
+    <div id="fpBox"></div>
+    <div class="section">Что послушать</div>
+    <div class="sub" style="margin:-8px 0 14px">${likes.length ? 'Подборка по исполнителям, которых вы лайкнули' : 'Подборка популярных треков'}</div>`);
+  loadFeatured();
   setBody('<p class="sub">Подбираем треки…</p>');
   const my = loadId;
   homeMix()
-    .then((tracks) => { if (my === loadId && view.type === 'home') { if (tracks.length) renderTracks(tracks); else setBody('<p class="sub">Пока нет рекомендаций. Добавьте любимых исполнителей в избранное — здесь появится музыка в их стиле.</p>'); } })
+    .then((tracks) => { if (my === loadId && view.type === 'home') renderTracks(tracks); })
     .catch((e) => { if (my === loadId) setBody(`<p class="sub">${esc(e.message)}</p>`); });
 }
 
@@ -851,7 +851,7 @@ function showTrends() {
       <h2>Топ-чарт</h2>
       <div class="sub">Россия</div>
     </div></div>`);
-  load('/api/chart?option=russia');
+  load('/api/chart?option=russia').then((t) => { if (t && t.length && view.type === 'trends') syncChartPlaylist(t); });
 }
 
 // ---------- Страница артиста (как в Яндекс Музыке) ----------
@@ -879,42 +879,42 @@ async function featuredWithArtist(aid) {
 
 async function showArtist(id) {
   view = { type: 'artist' };
-  visibleN = 6;
+  visibleN = 5;
   setActive(null);
   setPageRaw('<p class="sub" style="margin-top:8px">Загрузка…</p>');
   const my = loadId;
   try {
-    const [artistData, feats] = await Promise.all([
-      api('/api/artist?id=' + enc(id)),
-      featuredWithArtist(id),
-    ]);
+    const data = await api('/api/artist?id=' + enc(id));
+    const feats = await featuredWithArtist(id);
     if (my !== loadId) return;
+    const artist = data.artist || {};
+    const tracks = data.tracks || [];
+    const albums = data.albums || [];
     const newest = [...albums].sort((a, b) => (b.year || 0) - (a.year || 0))[0];
     setPageRaw(`
       <div class="ahead">
         <div class="aavatar" style="${bg(artist.cover)}"></div>
         <div class="ainfo">
           <div class="kicker">Исполнитель</div>
-          <h1 class="aname">${esc(artist.name)}</h1>
-          <div class="sub">${(tracks || []).length} треков · ${albums.length} альбомов</div>
-          <div class="artist-monthly"><span class="dot"></span>${monthlyListeners === null ? '<span style="color:#777;font-weight:500">Статистика Яндекс Музыки недоступна</span>' : `<b>${monthlyListeners.toLocaleString('ru-RU')}</b> слушателей за месяц <span style="color:#777;font-weight:500">· Яндекс Музыка</span>`}</div>
+          <h1 class="aname">${esc(artist.name || '')}</h1>
+          <div class="sub">${tracks.length} треков · ${albums.length} альбомов</div>
           <div class="acts"><button class="btn" data-play-all>${I_PLAY} Слушать</button><button class="btn ghost" data-shuffle>Перемешать</button></div>
         </div>
       </div>
-      ${newest ? `<section class="artist-release">
-        <div class="section">Новый релиз</div>
-        <button class="artist-release-card" data-album="${esc(newest.id)}">
-          <div class="artist-release-cover" style="${bg(newest.cover)}"></div>
-          <div class="artist-release-info"><div class="artist-release-kicker">${esc(newest.type || 'НОВИНКА')} · ${newest.year || 'СВЕЖИЙ РЕЛИЗ'}</div>
-            <div class="artist-release-title">${esc(newest.title)}</div><div class="artist-release-sub">${esc(artist.name)} · слушать релиз</div>
-            <span class="artist-release-cta">${I_PLAY} Слушать</span></div>
-        </button>
-      </section>` : ''}
+      ${newest ? `<div class="section">Новый релиз</div>
+        <button class="newrel" data-album="${esc(newest.id)}">
+          <div class="nr-cover" style="${bg(newest.cover)}"></div>
+          <div class="nr-info">
+            <div class="nr-tag">Новый релиз</div>
+            <div class="nr-name">${esc(newest.title)}</div>
+            <div class="nr-sub">${newest.year || ''}${newest.type ? ' · ' + esc(newest.type) : ''}</div>
+          </div>
+        </button>` : ''}
       <div class="section">Популярные треки</div>
       <div id="body"></div>
       ${albums.length ? `<div class="section">Альбомы</div><div class="hrow">${albums.map(albumCard).join('')}</div>` : ''}
       ${feats.length ? `<div class="section">Плейлисты</div><div class="hrow">${feats.map(fpCard).join('')}</div>` : ''}`);
-    renderTracks(tracks || []);
+    renderTracks(tracks);
   } catch (e) {
     if (my !== loadId) return;
     setPageRaw(`<p class="sub">${esc(e.message)}</p>
@@ -1014,28 +1014,12 @@ function restoreState() {
   } catch (e) { /* повреждённые данные игнорируем */ }
 }
 
-// Статистика артиста, полученная из данных Яндекс Музыки (API).
-// В объекте артиста поле stats.last_month_listeners — слушатели за прошлый месяц.
-function yandexArtistMonthlyListeners(artist, response = {}) {
-  const candidates = [
-    artist?.stats?.last_month_listeners,
-    artist?.stats?.lastMonthListeners,
-    artist?.last_month_listeners,
-    artist?.lastMonthListeners,
-    response?.stats?.last_month_listeners,
-    response?.stats?.lastMonthListeners,
-  ];
-  const value = candidates.find((v) => v !== undefined && v !== null && Number.isFinite(Number(v)));
-  return value === undefined ? null : Number(value);
-}
-
 async function play(i, seek = 0, list = queue) {
   if (i < 0 || i >= list.length) return;
   const my = ++playToken;          // новый запрос отменяет все предыдущие
   audio.pause();                   // старый трек сразу останавливается
   playQueue = list;
   const t = list[i];
-
   currentId = t.id;
   pendingSeek = seek;
   showNowTrack(t);
@@ -1093,10 +1077,9 @@ window.addEventListener('beforeunload', () => saveState(true));
 
 // ---------- Плейлисты ----------
 function renderPlaylists() {
-  const visiblePlaylists = playlists.filter((p) => p.id !== CHART_PL_ID && !p.auto);
-  $('#plList').innerHTML = visiblePlaylists.length
-    ? visiblePlaylists.map((p) => `<button data-pl="${esc(p.id)}">${esc(p.name)}</button>`).join('')
-    : '<div class="empty">Плейлисты доступны в карточках артистов</div>';
+  $('#plList').innerHTML = playlists.length
+    ? playlists.map((p) => `<button data-pl="${esc(p.id)}">${esc(p.name)}</button>`).join('')
+    : '<div class="empty">Плейлистов пока нет</div>';
   setActive(view.type === 'playlist' ? 'pl:' + view.plId : view.type);
 }
 
@@ -1201,6 +1184,7 @@ $('#nav').addEventListener('mouseleave', () => asideEl.classList.remove('open'))
 
 function route(go) {
   if (go === 'home') showHome();
+  else if (go === 'wave') showWave();
   else if (go === 'trends') showTrends();
   else if (go === 'likes') showLikes();
   else if (go === 'library') showLibrary();
@@ -1219,7 +1203,7 @@ $('#plList').onclick = (e) => {
   const b = e.target.closest('button');
   if (b) showPlaylist(b.dataset.pl);
 };
-
+$('#newPl').onclick = () => openModal(null);
 
 $('#sf').onsubmit = (e) => {
   e.preventDefault();
@@ -1239,7 +1223,7 @@ $('#content').addEventListener('click', (e) => {
   if (alb) return showAlbum(alb.dataset.album);
   const plCard = e.target.closest('[data-pl]');
   if (plCard) return showPlaylist(plCard.dataset.pl);
-
+  if (e.target.closest('[data-newpl]')) return openModal(null);
   if (e.target.closest('[data-shuffle]')) return play(Math.floor(Math.random() * queue.length));
   if (e.target.closest('[data-cover]')) return $('#coverInput').click();
 
@@ -1254,13 +1238,14 @@ $('#content').addEventListener('click', (e) => {
     if (!t) return;
     const a = act.dataset.act;
     if (a === 'like') return toggleLike(t);
+    if (a === 'add') return openPopover(act, t);
     if (a === 'remove') return view.type === 'likes' ? toggleLike(t) : removeFromPlaylist(t.id);
     return;
   }
   if (row) return play(Number(row.dataset.i));
   if (e.target.closest('[data-play-all]')) return play(0);
   if (e.target.closest('[data-del]')) return deletePlaylist();
-
+  if (e.target.closest('[data-wave]')) return showWave();
 });
 
 // ---------- Полноэкранный плеер ----------
@@ -1462,11 +1447,12 @@ function showLibrary() {
   setPage(`
     <div class="ph"><div>
       <h2>Библиотека</h2>
-      <div class="sub">Ваши любимые треки</div>
+      <div class="sub">Плейлисты и избранное</div>
+      <div class="acts"><button class="btn" data-newpl>+ Новый плейлист</button></div>
     </div></div>`);
   const cards = [
     `<button class="pcard" data-go="likes"><div class="pc-cover heart-card">${HEART_SVG}</div><div class="pc-name">Избранное</div><div class="pc-sub">${likes.length} треков</div></button>`,
-
+    ...playlists.map((p) => `<button class="pcard" data-pl="${esc(p.id)}"><div class="pc-cover" style="${bg(p.cover || p.tracks[0]?.cover)}"></div><div class="pc-name">${esc(p.name)}</div><div class="pc-sub">${p.tracks.length} треков</div></button>`),
   ];
   setBody(`<div class="pgrid">${cards.join('')}</div>`);
 }
@@ -1555,6 +1541,7 @@ function renderPf() {
       <p class="pf-p" style="text-align:center">Всего вы слушали музыку</p></div>
     <div class="st" style="--i:2"><div class="pf-stats">
       <div class="pf-stat"><b>${likes.length}</b><span>В избранном</span></div>
+      <div class="pf-stat"><b>${playlists.length}</b><span>Плейлистов</span></div>
       <div class="pf-stat"><b>${days}</b><span>${days % 10 === 1 && days % 100 !== 11 ? 'день' : 'дн.'} в Wave</span></div></div></div>
     <div class="st" style="--i:3;margin-top:14px">${me.admin ? '<button class="pf-btn pri" data-pf="admin">Админ-панель</button>' : ''}<button class="pf-btn red" data-pf="out">Выйти</button></div>`;
   const t0 = performance.now() + 500;
