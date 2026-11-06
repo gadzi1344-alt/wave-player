@@ -102,26 +102,41 @@ export async function onRequestGet({ params, request, env }) {
     }
 
     // ---- Текст песни: синхронизированный LRC, если есть, иначе обычный текст ----
+    // steps — что вернул каждый шаг, чтобы видеть причину, если текста нет
     if (params.action === 'lyrics') {
       const id = sp.get('id');
       if (!id) return json({ error: 'Нужен id' }, 400);
+      const tid = encodeURIComponent(id);
+      const steps = [];
       try {
-        const r = await fetch(`${API}/tracks/${encodeURIComponent(id)}/lyrics`, {
+        const r = await fetch(`${API}/tracks/${tid}/lyrics`, {
           method: 'POST',
           headers: { ...headers, 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({ format: 'LRC', timeStamp: String(Date.now()) }),
           signal: AbortSignal.timeout(12000),
         });
-        const d = await r.json();
+        const d = await r.json().catch(() => ({}));
+        steps.push({ step: 'lrc-request', status: r.status, result: Object.keys(d.result || {}) });
         const link = d.result?.downloadUrl;
         if (link) {
-          const lrc = await (await fetch(link, { signal: AbortSignal.timeout(12000) })).text();
-          if (lrc.trim()) return json({ lrc });
+          const lr = await fetch(link, { signal: AbortSignal.timeout(12000) });
+          const lrc = await lr.text();
+          steps.push({ step: 'lrc-download', status: lr.status, bytes: lrc.length });
+          if (lrc.trim()) return json({ lrc, steps });
         }
-      } catch (_) { /* переходим к обычному тексту */ }
-      const s = await get(`/tracks/${encodeURIComponent(id)}/supplement`);
-      const text = s.result?.lyrics?.fullLyrics || s.result?.lyrics?.text || '';
-      return json({ text });
+      } catch (e) {
+        steps.push({ step: 'lrc', error: String(e) });
+      }
+      try {
+        const s = await get(`/tracks/${tid}/supplement`);
+        const l = s.result?.lyrics || {};
+        steps.push({ step: 'supplement', result: Object.keys(s.result || {}), lyrics: Object.keys(l) });
+        const text = l.fullLyrics || l.text || '';
+        if (text) return json({ text, steps });
+      } catch (e) {
+        steps.push({ step: 'supplement', error: String(e) });
+      }
+      return json({ text: '', steps });
     }
 
     // ---- Прямая ссылка на mp3 ----

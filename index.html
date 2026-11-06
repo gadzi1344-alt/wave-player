@@ -1348,7 +1348,8 @@ async function refreshLyrics() {
     } else if (d.text) {
       box.innerHTML = d.text.split('\n').map((s) => `<p>${esc(s) || '&nbsp;'}</p>`).join('');
     } else {
-      box.innerHTML = '<div class="msg">Текст для этого трека не найден</div>';
+      box.innerHTML = `<div class="msg">Текст для этого трека не найден</div>
+        <div class="msg" style="font-size:11px;opacity:.6;padding-top:12px;word-break:break-all">${esc(JSON.stringify(d.steps || []))}</div>`;
     }
   } catch (e) {
     if (lyrTrack === currentId) lyrTrack = null;
