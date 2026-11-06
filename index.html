@@ -523,6 +523,18 @@
   .hrow .acard:nth-child(6){animation-delay:350ms}
   .hrow .acard:nth-child(7){animation-delay:420ms}
   .hrow .acard:nth-child(8){animation-delay:490ms}
+  /* ---------- Телефон: плеер сверху, вкладки снизу капсулой, поиск по центру ---------- */
+  @media (max-width:760px){
+    main{padding:calc(env(safe-area-inset-top,0px) + 96px) 16px calc(var(--tab) + 40px + env(safe-area-inset-bottom,0px)) !important}
+    .search{max-width:440px !important;width:100% !important;margin:0 auto 20px !important}
+    .player{top:calc(env(safe-area-inset-top,0px) + 10px) !important;bottom:auto !important;left:10px !important;right:10px !important;height:66px !important;z-index:23}
+    .tabbar{top:auto !important;left:10px !important;right:10px !important;bottom:calc(env(safe-area-inset-bottom,0px) + 10px) !important;height:66px !important;padding:6px !important;border:1px solid #2a2a2a !important;border-radius:24px !important;background:#111111f2 !important;box-shadow:0 18px 40px #000b;z-index:22}
+    .toast{top:calc(env(safe-area-inset-top,0px) + 92px)}
+  }
+  /* ---------- Компьютер: поиск ровно по центру экрана (боковая колонка 110px, половина = 55px) ---------- */
+  @media (min-width:761px){
+    .search{transform:translateX(-55px)}
+  }
 </style>
 </head>
 <body>
